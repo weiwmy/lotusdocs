@@ -25,7 +25,7 @@
             <ul class="social-link d-flex list-inline mb-0">
                 {{ range . }}
                     {{ $path := printf "images/social/%s.%s" . "svg" }}
-                    <li class="list-inline-item mb-0">
+                    <li class="list-inline-item mb-0 me-0">
                         <a href="{{ if eq . `rss` }} {{ `index.xml` | absURL }} {{ else }} https://{{ . }}.com/{{ index site.Params.social . }} {{ end }}" alt="{{ . }}" rel="noopener noreferrer" target="_blank">
                             <div class="btn btn-icon btn-landing border-0">
                                 {{ with resources.Get $path }}
@@ -39,7 +39,7 @@
             {{ end }}
             <!-- Social Links End -->
 
-            <div class="menu-extras ms-3 me-2">
+            <div class="menu-extras ms-2 me-2">
                 <div class="menu-item">
                     <!-- Mobile menu toggle-->
                     <button class="navbar-toggle btn btn-icon btn-soft-light" id="isToggle" aria-label="toggleMenu" onclick="toggleMenu()">

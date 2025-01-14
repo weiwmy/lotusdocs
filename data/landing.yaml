@@ -7,13 +7,13 @@ hero:
   template: hero
 
   backgroundImage:
-    path: "images/templates/hero"
+    path: "images/"
     filename:
-      desktop: "gradient-desktop.webp"
-      mobile: "gradient-mobile.webp"
+      desktop: "hero.webp"
+      mobile: "hero.webp"
 
   badge:
-    text: v0.1.0
+    text: 2024-11-18
     color: primary # primary, secondary, success, danger, warning, info, light, dark
     pill: false # boolean
     soft: true # boolean
@@ -21,29 +21,28 @@ hero:
   # titleLogo:
   #   path: "images/logos"
   #   filename: "title_logo.png"
-  #   alt: "Lotus Docs Logo"
+  #   alt: "Weitheme Logo"
   #   height: 80px
 
-  title: "Lotus Docs"
-  subtitle: A lightweight, **modern documentation** theme for Hugo. Easily customised for building **fast**, **secure**, and **SEO-friendly** documentation sites.
-
+  title: "weiwmy's site"
+  subtitle: share with you, better for us.
   image:
     path: "images" # path to image under configured assets directory. default 'images'
-    filename: "lotus_docs_screenshot.png" # filename of your hero image (including file extension)
-    alt: "Lotus Docs Screenshot" # Optional but recommended
+    filename: "hero.png" # filename of your hero image (including file extension)
+    alt: "Weitheme Screenshot" # Optional but recommended
     boxShadow: true # default 'false' (excludes .svg images)
     rounded: true # round the image corners? default 'false' (excludes .svg images)
 
   ctaButton:
-    icon: rocket_launch
-    btnText: "Get Started"
-    url: "/docs/quickstart/#create-a-new-lotus-docs-site"
+    icon: home
+    btnText: "Home"
+    url: "https://www.weiwmy.com/posts/"
   cta2Button:
-    icon: construction
-    btnText: "In Development"
-    url: "https://github.com/colinwilson/lotusdocs"
+    icon: people
+    btnText: "About"
+    url: "https://github.com/weiwmy"
 
-  info: "**Open Source** MIT Licensed."
+  info: "**Recently updated**"
 
 # Feature Grid
 featureGrid:
@@ -51,57 +50,56 @@ featureGrid:
   weight: 20
   template: feature grid
 
-  title: Why choose Lotus Docs?
-  subtitle: Lotus Docs is a highly configurable Hugo documentation theme. Yet, with the default configuration you can deploy and publish your documentation site in a matter of minutes. Check out some core features below.
-
+  title: What is it?
+  subtitle: weiwmy's site
   items:
-    - title: Fast
-      icon: speed
-      description: 4 x 100's score on Google Lighthouse by default. Lotus Docs removes unused CSS, prefetches asset links, and lazy loads content images.
+    - title: A-Articles
+      icon: article
+      description: 文章
 
-    - title: SEO Friendly
-      icon: trending_up
-      description: Data is automatically structured to be SEO friendly. Includes Meta tags, Opengraph, and Twitter cards. Choose the settings that best suit you.
+    - title: B-Photos
+      icon: photo
+      description: 图集
 
-    - title: Secure by default
-      icon: lock
-      description: Lotus Docs' default configuration scores A+ on Mozilla Observatory. You can update the default Security Headers to suit your requirements.
+    - title: C-Audios
+      icon: mic
+      description: 音频
 
-    - title: Optional Features
-      icon: settings
-      description: Many Lotus Docs features are configurable via optional parameters. Require DocSearch for your site? Then enable it via a single setting.
+    - title: D-Videos
+      icon: movie
+      description: 视频
 
-    - title: Deploy to Vercel
-      icon: change_history
-      description: Deploy to Vercel in seconds. Vercel Functions, Vercel Redirects/Rewrites, and Vercel Headers are all configurable for an enriched experience.
+    - title: E-Share
+      icon: share
+      description: 分享
 
-    - title: Dark Mode
-      icon: dark_mode
-      description: "Prefer not to be blasted by the sun while reading? Switch to a low-light UI with the click of a button. Modify colour variables to match your branding."
+    - title: F-Study
+      icon: school
+      description: 学习
 
-    - title: Search by DocSearch
-      icon: search
-      description: Search your docs with DocSearch. A powerful, efficient and accessible search solution built on Algolia Crawler & Autocomplete.
+    - title: G-Work
+      icon: work
+      description: 工作
 
-    - title: Multilingual Support
-      icon: translate
-      description: Lotus Docs supports Hugo's Multilingual Mode. Create documentation in multiple languages side by side with i18n support.
+    - title: H-Life
+      icon: weekend
+      description: 生活
 
-    - title: Bootstrap v5
-      icon: palette
-      description: Built on Bootstrap 5, Lotus Docs allows for a familiar, flexible, and intuitive developer experience. Easily customise your site via SCSS variables and files.
+    - title: Y-Repo
+      icon: apps
+      description: 仓库
 
 # Image compare
 imageCompare:
-  enable: true
+  enable: true 
   weight: 30
   template: image compare
 
-  title: Customise The Lotus Docs Appearance
-  subtitle: Much of Lotus Docs' appearance can be customised. Dark mode is optional (enabled by default) and you can choose a Google font that suites you via the config parameters.
+  title: who am I ?
+  subtitle: I am a software engineer
 
   items:
-    - title: Dark Mode
+    - title: Engineer
       config: {
         startingPoint: 50,
         addCircle: true,
@@ -114,10 +112,10 @@ imageCompare:
         }
       }
       imagePath: "images/screenshots"
-      imageBefore: "lotusdocs_dark_v0.8.webp"
-      imageAfter: "lotusdocs_light_v0.8.webp"
+      #imageBefore: "weitheme_dark_v0.8.webp"
+      #imageAfter: "weitheme_light_v0.8.webp"
 
-    - title: Custom Fonts
+    - title: Designer
       config: {
         controlColor: "#3C4257",
         startingPoint: 25,
@@ -130,11 +128,11 @@ imageCompare:
           onHover: false
         }
       }
-      imagePath: "images/screenshots"
-      imageBefore: "lotusdocs_google_font_demo_inter_screenshot.webp"
-      imageAfter: "lotusdocs_google_font_demo_lifesavers_screenshot.webp"
+      #imagePath: "images/screenshots"
+      #imageBefore: "weitheme_google_font_demo_inter_screenshot.webp"
+      #imageAfter: "weitheme_google_font_demo_lifesavers_screenshot.webp"
 
-    - title: Accent Color
+    - title: Writer
       config: {
         startingPoint: 25,
         addCircle: true,
@@ -146,6 +144,6 @@ imageCompare:
           onHover: false
         }
       }
-      imagePath: "images/screenshots"
-      imageBefore: "lotusdocs_blue_theme_colour.webp"
-      imageAfter: "lotusdocs_cardinal_theme_colour.webp"
+      #imagePath: "images/screenshots"
+      #imageBefore: "weitheme_blue_theme_colour.webp"
+     # imageAfter: "weitheme_cardinal_theme_colour.webp"

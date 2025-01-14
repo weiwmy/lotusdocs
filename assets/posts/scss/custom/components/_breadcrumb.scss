@@ -1,0 +1,73 @@
+//
+// breadcrumb.scss
+//
+:root {
+    --breadcrumb-item-color: var(--primary);
+    --breadcrumb-font-size: 16px;
+    --breadcrumb-item-gap: 0.2rem;  /* 设置面包屑项之间的间距 */
+}
+
+[data-dark-mode] {
+    --breadcrumb-item-color: var(--primary-300);
+}
+
+/* 面包屑容器 */
+.breadcrumb {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    list-style: none;
+    padding: 0;  /* 去除内边距 */
+    font-size: var(--breadcrumb-font-size);  /* 设置默认字体大小 */
+    gap: var(--breadcrumb-item-gap);  /* 使用 gap 来控制面包屑项之间的间距 */
+}
+
+/* 面包屑项 */
+.breadcrumb .breadcrumb-item {
+    display: flex;  /* 使用 flex 布局 */
+    align-items: center;
+    padding: 0;  /* 去除内边距 */
+}
+
+/* 面包屑项最后一个不需要右侧间距 */
+.breadcrumb .breadcrumb-item:last-child {
+    margin-right: 0;
+}
+
+/* 面包屑链接 */
+.breadcrumb .breadcrumb-item a {
+    text-decoration: none;
+    color: var(--breadcrumb-item-color);  /* 设置默认链接颜色 */
+}
+
+/* 当前页面的面包屑项 */
+.breadcrumb .breadcrumb-item.active {
+    color: var(--text-muted);
+    padding: 0;  /* 去除内边距 */
+}
+
+/* 图标与文本对齐 */
+.breadcrumb .breadcrumb-item i.material-icons {
+    font-size: 16px;
+    vertical-align: middle;
+}
+
+/* 面包屑项分隔符 */
+.breadcrumb .breadcrumb-item::before {
+    content: "/";  /* 默认分隔符为 "/" */
+    padding: 0;  /* 去除内边距 */
+    margin-right: var(--breadcrumb-item-gap);  /* 增加分隔符与项之间的间距 */
+    font-size: var(--breadcrumb-font-size);  /* 设置字体大小一致 */
+}
+
+/* 面包屑项第一个不需要分隔符 */
+.breadcrumb .breadcrumb-item:first-child::before {
+    content: "";  /* 第一个面包屑项前没有分隔符 */
+}
+
+/* 响应式处理：小屏幕时字体缩小 */
+@media (max-width: 1199px) {
+    .breadcrumb {
+        font-size: calc(var(--breadcrumb-font-size) * 0.9);  /* 小屏幕时字体稍微缩小 */
+    }
+}

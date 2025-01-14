@@ -6,9 +6,6 @@
 
 $fw-medium: 600;
 
-//Custom Fonts
-// $font-family-secondary:     'Nunito', sans-serif;
-
 $text-default:              #3C4257;
 $muted:                     #6b7686;
 $dark:                      #3c4858;
@@ -77,12 +74,12 @@ $text-color-white:          $body-bg;
 $bg-white-color:            $white;
 
 $heading-font-sizes: (
-    "h1": 42px,
-    "h2": 36px,
-    "h3": 30px,
+    "h1": 36px,
+    "h2": 30px,
+    "h3": 24px,
     "h4": 24px,
-    "h5": 20px,
-    "h6": 16px,
+    "h5": 16px,
+    "h6": 14px,
 );
 
 $display-font-sizes: (
@@ -699,12 +696,12 @@ $line-height-base:            1.5;
 $line-height-sm:              1.25;
 $line-height-lg:              2;
 
-$h1-font-size:                42px;
-$h2-font-size:                36px;
-$h3-font-size:                30px;
-$h4-font-size:                24px;
-$h5-font-size:                20px;
-$h6-font-size:                16px;
+$h1-font-size:                36px;
+$h2-font-size:                30px;
+$h3-font-size:                26px;
+$h4-font-size:                20px;
+$h5-font-size:                16px;
+$h6-font-size:                14px;
 // scss-docs-end font-variables
 
 // scss-docs-start font-sizes

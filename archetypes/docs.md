@@ -1,5 +1,5 @@
 ---
-weight: 999
+weight: 1
 title: "{{ replace .Name "-" " " | title }}"
 description: ""
 icon: "article"
