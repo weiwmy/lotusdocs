@@ -224,7 +224,7 @@
             justify-content: center;
             > li {
                 > a {
-                    min-height: 70px;
+                    min-height: 60px;
                 }
                 &:hover {
                     > .menu-arrow {
@@ -333,7 +333,7 @@
                 float: none;
                 > a {
                     color: $dark;
-                    padding: 10px 20px;
+                    padding: 6px 12px;
                     &:after {
                         position: absolute;
                         right: 15px;
@@ -352,7 +352,7 @@
 
     #navigation {
         position: absolute;
-        top: 64px;
+        top: 60px;
         left: 0;
         width: 100%;
         display: none;
