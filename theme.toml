@@ -9,7 +9,7 @@ homepage = "https://github.com/weiwmy/weitheme"
 demosite = "https://weiwmy.com"
 tags = ["documentation", "responsive", "bootstrap", "minimal", "secure", "search", "customizable", "modern","dark", "dark mode", "landing page"]
 features = ["security aware", "fast by default", "dark mode"]
-min_version = "0.139.3"
+min_version = "0.148.2"
 
 [author]
   name = "weiwmy"

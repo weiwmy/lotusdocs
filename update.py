@@ -41,7 +41,7 @@ def copy_parent_dirs(parent_dirs, src_base_dir, dest_base_dir, ignore_patterns):
 def main():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
-    content_dir = os.path.join(current_dir, 'content/posts')
+    content_dir = os.path.join(current_dir, 'content/docs')
 
     parent_dirs_to_copy = ['A-Articles', 'B-Photos', 'C-Audios', 'D-Videos', 'E-Share', 'F-Study', 'G-Work', 'H-Life']
     exclude_file = '_index.md'

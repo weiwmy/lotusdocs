@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {{ $.Scratch.Delete "social_list" }}
-{{ $.Scratch.Set "pathName" (printf "%s" (.Site.Params.docs.pathName | default "posts")) }}
+{{ $.Scratch.Set "pathName" (printf "%s" (.Site.Params.docs.pathName | default "docs")) }}
 <!-- social_list -->
 {{ $social_params := slice "github" "twitter" "instagram" "rss" }}
 {{ range $social_params }}

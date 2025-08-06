@@ -13,7 +13,7 @@ hero:
       mobile: "hero.webp"
 
   badge:
-    text: 2024-11-18
+    text: 2025-06-18
     color: primary # primary, secondary, success, danger, warning, info, light, dark
     pill: false # boolean
     soft: true # boolean
@@ -36,9 +36,9 @@ hero:
   ctaButton:
     icon: home
     btnText: "Home"
-    url: "https://www.weiwmy.com/posts/"
+    url: "/docs/"
   cta2Button:
-    icon: people
+    icon: person
     btnText: "About"
     url: "https://github.com/weiwmy"
 
@@ -56,13 +56,13 @@ featureGrid:
     - title: A-Articles
       icon: article
       description: 文章
-
+      
     - title: B-Photos
       icon: photo
       description: 图集
 
     - title: C-Audios
-      icon: mic
+      icon: podcasts
       description: 音频
 
     - title: D-Videos

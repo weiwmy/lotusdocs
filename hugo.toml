@@ -1,4 +1,4 @@
-baseURL = "/"
+baseURL = "https://www.weiwmy.com/"
 languageCode = "en-GB"
 contentDir = "content"
 enableEmoji = true
@@ -13,7 +13,7 @@ defaultContentLanguage = 'en'
 [module]
   [module.hugoVersion]
     extended = true
-    min = "0.139.3"
+    min = "0.129.0"
   [[module.imports]]
     path = "github.com/gohugoio/hugo-mod-bootstrap-scss/v5"
     disable = false
@@ -32,7 +32,7 @@ defaultContentLanguage = 'en'
     [params.docs] # Parameters for the /docs 'template'
         title           = "weiwmy's site"           # default html title for documentation pages/sections
 
-        pathName        = "posts"                            # path name for documentation site | default "docs"
+        pathName        = "docs"                            # path name for documentation site | default "docs"
 
         themeColor      = "blue"                            # (optional) - Set theme accent colour. Options include: blue (default), green, red, yellow, emerald, cardinal, magenta, cyan
 
@@ -84,8 +84,17 @@ defaultContentLanguage = 'en'
 
 [menu]
 [[menu.primary]]
-    name  = "Posts"
-    url = "/posts/"
-    identifier = "Posts"
+    name  = "Docs"
+    url = "/docs/"
+    identifier = "docs"
     weight = 10
-
+[[menu.primary]]
+    name  = "Blog"
+    url = "/blog"
+    identifier = "blog"
+    weight = 20
+[[menu.primary]]
+    name  = "About"
+    url = "/docs/a-articles/a1-introduce/01-about/"
+    identifier = "about"
+    weight = 30
