@@ -90,7 +90,7 @@ defaultContentLanguage = 'en'
     weight = 10
 [[menu.primary]]
     name  = "Blog"
-    url = "/blog"
+    url = "/blog/"
     identifier = "blog"
     weight = 20
 [[menu.primary]]
