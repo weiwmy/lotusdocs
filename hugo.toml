@@ -1,4 +1,4 @@
-baseURL = "https://www.weiwmy.com/"
+baseURL = "https://weidocs.vercel.app/"
 languageCode = "en-GB"
 contentDir = "content"
 enableEmoji = true
@@ -71,7 +71,7 @@ defaultContentLanguage = 'en'
         # Link behaviour
         intLinkTooltip  = true                                # Enable a tooltip for internal links that displays info about the destination? default false
         extLinkNewTab   = true                                # Open external links in a new Tab? default true
-        logoLinkURL = "https://www.weiwmy.com/"               # Set a custom URL destination for the top header logo link.
+        logoLinkURL = "https://weidocs.vercel.app/"               # Set a custom URL destination for the top header logo link.
 
     [params.flexsearch] # Parameters for FlexSearch
         enabled             = true
