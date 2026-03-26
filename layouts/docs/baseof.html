@@ -84,7 +84,8 @@
                                             <script>{{ $darkModeSwitch.Content | safeJS }}</script>
                                         {{ end -}}
 
-        {{- partialCached (printf "%s/footer/footer-scripts.html" $pathName) . -}}
+        {{/* Moved to head */}}
+
         {{ if site.Params.flexsearch.enabled | default true }}
             {{- partialCached (printf "%s/footer/flexsearch.html" $pathName) . -}}
         {{ end }}

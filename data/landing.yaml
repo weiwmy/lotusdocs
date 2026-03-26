@@ -28,7 +28,7 @@ hero:
   subtitle: share with you, better for us.
   image:
     path: "images" # path to image under configured assets directory. default 'images'
-    filename: "hero.png" # filename of your hero image (including file extension)
+    filename: "hero.webp" # filename of your hero image (including file extension)
     alt: "Weitheme Screenshot" # Optional but recommended
     boxShadow: true # default 'false' (excludes .svg images)
     rounded: true # round the image corners? default 'false' (excludes .svg images)

@@ -10,18 +10,24 @@
             {{- with .image -}}
                 {{- $path := printf "%s/%s" (.path | default "images") .filename -}}
                 {{- with resources.Get $path -}}
-                    {{- with .Resize (printf "%dx%d webp" .Width .Height) -}}
+                    {{- with .Resize (printf "%dx%d webp q85 Lanczos" .Width .Height) -}}
                     <link rel="preload" href="{{ .RelPermalink }}" as="image" fetchpriority="high">
                     {{- end -}}
                 {{- end -}}
             {{- end -}}
         {{- end -}}
     {{- end -}}
-    <!-- Turbo -->
+    <!-- Turbo JS -->
     {{- $turbo := resources.Get "js/turbo.min.js" -}}
     {{- if $turbo -}}
-        <script src="{{ $turbo.RelPermalink }}" defer></script>
+        <script src="{{ $turbo.RelPermalink }}"></script>
     {{- end -}}
+    <!-- Turbo Prefetch (Turbo 8) -->
+    <meta name="turbo-prefetch" content="true">
+
+    {{- partialCached (printf "%s/footer/footer-scripts.html" $pathName) . $pathName -}}
+
+
 
 
     <title>
