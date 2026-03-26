@@ -49,11 +49,15 @@
                                 {{ $pathAfter := printf "%s/%s" $path $imageAfter }}
                                 {{ with and $imageBefore $imageAfter }}
                                     <div id="{{ anchorize $title }}-compare" class="image-compare rounded-md border">
-                                        {{ with $imageBefore := resources.Get $pathBefore }}
-                                            <img src="{{ .RelPermalink }}" alt="{{ $imageBefore }}" />
+                                        {{ with $imgBefore := resources.Get $pathBefore }}
+                                            {{ with .Resize (printf "%dx webp" .Width) }}
+                                                <img src="{{ .RelPermalink }}" alt="{{ $title }} before" loading="lazy" />
+                                            {{ end }}
                                         {{ end }}
-                                        {{ with $imageAfter := resources.Get $pathAfter }}
-                                            <img src="{{ .RelPermalink }}" alt="{{ $imageAfter }}" />
+                                        {{ with $imgAfter := resources.Get $pathAfter }}
+                                            {{ with .Resize (printf "%dx webp" .Width) }}
+                                                <img src="{{ .RelPermalink }}" alt="{{ $title }} after" loading="lazy" />
+                                            {{ end }}
                                         {{ end }}
                                     </div>
                                 {{ end }}

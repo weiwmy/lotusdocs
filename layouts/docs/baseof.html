@@ -7,7 +7,8 @@
     <body>
         <div class="content">
             <div class="page-wrapper toggled">
-                {{- partial (printf "%s/sidebar.html" $pathName) . -}}
+                {{- partialCached (printf "%s/sidebar.html" $pathName) . $pathName -}}
+
                     <!-- Start Page Content -->
                     <main class="page-content bg-transparent">
                         {{ if hugo.IsMultilingual }}

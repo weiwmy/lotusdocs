@@ -1,5 +1,29 @@
 <head>
     <meta charset="utf-8" />
+    {{- $pathName := page.Store.Get "pathName" -}}
+    <!-- Preload Critical Assets -->
+    {{- with resources.Get (printf "/%s/fonts/JetBrainsMono-Regular.woff2" $pathName) -}}
+    <link rel="preload" href="{{ .RelPermalink }}" as="font" type="font/woff2" crossorigin>
+    {{- end -}}
+    {{- range (index hugo.Data.landing) -}}
+        {{- if eq .template "hero" -}}
+            {{- with .image -}}
+                {{- $path := printf "%s/%s" (.path | default "images") .filename -}}
+                {{- with resources.Get $path -}}
+                    {{- with .Resize (printf "%dx%d webp" .Width .Height) -}}
+                    <link rel="preload" href="{{ .RelPermalink }}" as="image" fetchpriority="high">
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+    <!-- Turbo -->
+    {{- $turbo := resources.Get "js/turbo.min.js" -}}
+    {{- if $turbo -}}
+        <script src="{{ $turbo.RelPermalink }}" defer></script>
+    {{- end -}}
+
+
     <title>
         {{- $url := replace .Permalink (printf "%s" site.BaseURL) "" }}
         {{- if eq $url "/" }}
@@ -55,9 +79,9 @@
         {{- $flexSearch := resources.Get (printf "/%s/js/flexsearch.bundle.js" $pathName) -}}
         {{- if not hugo.IsServer -}}
             {{- $flexSearch := $flexSearch | minify | fingerprint "sha384" -}}
-            <script type="text/javascript" src="{{ $flexSearch.Permalink }}" integrity="{{ $flexSearch.Data.Integrity }}" crossorigin="anonymous"></script>
+            <script type="text/javascript" src="{{ $flexSearch.Permalink }}" integrity="{{ $flexSearch.Data.Integrity }}" crossorigin="anonymous" defer></script>
         {{- else -}}
-            <script type="text/javascript" src="{{ $flexSearch.Permalink }}"></script>
+            <script type="text/javascript" src="{{ $flexSearch.Permalink }}" defer></script>
         {{- end -}}
     {{- end -}}
     
@@ -69,8 +93,9 @@
         {{- if hugo.IsProduction -}}
             {{- $style = $style | minify | fingerprint "sha384" -}}
         {{- end -}}
-        <link rel="stylesheet" href="{{ $style.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $style.Data.Integrity }}"{{ end }} crossorigin="anonymous">
+        <link rel="stylesheet" href="{{ $style.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $style.Data.Integrity }}"{{ end }} crossorigin="anonymous" data-turbo-track="reload">
     {{- end -}}
+
 
     <!-- Google Analytics v4 Config -->
     {{- if not hugo.IsServer }}
