@@ -1,6 +1,6 @@
 <head>
     <meta charset="utf-8" />
-    <title>{{- .Site.Title }}</title>
+    <title>{{- site.Title }}</title>
     {{- if not hugo.IsProduction }}
     <meta name="robots" content="noindex">
     {{- end }}
@@ -36,7 +36,7 @@
         <script src="{{ $js.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $js.Data.Integrity }}"{{ end -}} defer></script>
     <!-- Google Analytics v4 Config -->
     {{- if not hugo.IsServer }}
-    {{- if .Site.Config.Services.GoogleAnalytics.ID }}
+    {{- if site.Config.Services.GoogleAnalytics.ID }}
         {{- template "_internal/google_analytics.html" . -}}
     {{- end -}}
     {{- end -}}

@@ -1,6 +1,6 @@
-{{ $sectionTitle := .Scratch.Get "sectionTitle" }}
-{{ with (index .Site.Data.landing $sectionTitle) }}
-{{ if eq .enable true }}
+{{- $sectionTitle := page.Store.Get "sectionTitle" -}}
+{{- with (index hugo.Data.landing $sectionTitle) -}}
+{{- if .enable }}
 <!-- Features Start -->
 <section id="{{ $sectionTitle }}">
     <div class="container mt-100 mt-60">

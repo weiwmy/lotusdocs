@@ -1,24 +1,19 @@
 {{ define "main" }}
-    {{ $landingData := .Site.Data.landing }}
-    {{ $map := newScratch }}
+    {{- $landingData := hugo.Data.landing -}}
+    {{- $wgtTpl := slice -}}
 
-    {{ range $key, $value := $landingData }}
-        {{ $sectionTitle := (index $key) }}
-        {{ $weight := string ($value.weight) }}
-        {{ $template := string (replaceRE `( |-{1,})` "_" $value.template) }}
-        {{ with and $template $weight }}
-            {{ $map.SetInMap "wgtTpl" $sectionTitle (dict
-            "weight" $weight
-            "template" $template
-            "sectionTitle" $sectionTitle
-            )}}
-        {{ end }}
-    {{ end }}
+    {{- range $key, $value := $landingData -}}
+        {{- $sectionTitle := $key -}}
+        {{- $weight := $value.weight -}}
+        {{- $template := replaceRE `( |-{1,})` "_" $value.template -}}
+        {{- if and $template $weight -}}
+            {{- $wgtTpl = $wgtTpl | append (dict "weight" $weight "template" $template "sectionTitle" $sectionTitle) -}}
+        {{- end -}}
+    {{- end -}}
 
-    {{ range sort ($map.Get "wgtTpl") ".weight" }}
-        {{ $.Scratch.Set "sectionTitle" .sectionTitle }}
-        {{ $path := printf "landing/%s.html" .template }}
-        {{ partial $path $.Page }}
-    {{ end }}
-    {{/* printf "%s" (sort ($map.Get "wgtTpl") ".weight" ) */}}
+    {{- range sort $wgtTpl "weight" -}}
+        {{- page.Store.Set "sectionTitle" .sectionTitle -}}
+        {{- $path := printf "landing/%s.html" .template -}}
+        {{- partial $path $.Page -}}
+    {{- end -}}
 {{ end }}

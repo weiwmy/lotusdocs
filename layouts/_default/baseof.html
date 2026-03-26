@@ -1,13 +1,9 @@
 <!DOCTYPE html>
-{{ $.Scratch.Delete "social_list" }}
-<!-- social_list -->
-{{ $social_params := slice "github" "twitter" "instagram" "rss" }}
-{{ range $social_params }}
-    {{ if isset site.Params.social . }}
-        {{ $.Scratch.Add "social_list" (slice .) }}
-    {{ end }}
-{{ end }}
-{{ $ic := newScratch }}
+{{- $pathName := site.Params.docs.pathName | default "docs" -}}
+{{- page.Store.Set "pathName" $pathName -}}
+{{- partial (printf "%s/social-list.html" $pathName) . -}}
+{{ $ic := page.Store }}
+
 <html lang="{{ site.LanguageCode }}" dir="ltr">
     {{- partial "head.html" . -}}
     <body>
@@ -30,7 +26,7 @@
         {{- end }}
 
         <!-- Image Compare Viewer Config -->
-        {{ if ($.Scratch.Get "image_compare_enabled") }}
+        {{ if page.Store.Get "image_compare_enabled" }}
         <script>
             const viewers = document.querySelectorAll(".image-compare");
             let configs = [

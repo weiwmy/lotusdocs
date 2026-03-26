@@ -1,6 +1,7 @@
-{{ $sectionTitle := .Scratch.Get "sectionTitle" }}
-{{ with (index .Site.Data.landing $sectionTitle) }}
-{{ if eq .enable true }}
+{{- $sectionTitle := page.Store.Get "sectionTitle" -}}
+{{- with (index hugo.Data.landing $sectionTitle) -}}
+{{- if .enable }}
+{{- page.Store.Set "image_compare_enabled" true -}}
 <section id="{{ $sectionTitle }}">
     <div class="container mt-100 mt-60">
         <div class="row justify-content-center">
@@ -36,6 +37,7 @@
             <div class="col-12 mt-4 pt-2">
                 <div class="tab-content" id="pills-tab-{{ $sectionTitle }}Content">
                     {{ range $index, $value := .items }}
+                    {{ page.Store.Add "config" (slice .config) }}
                     <div class="tab-pane fade show{{ if (eq $index 0) }} active{{ end }}" id="pills-{{ $sectionTitle }}-{{ anchorize .title }}" role="tabpanel" aria-labelledby="{{ anchorize .title }}-tab">
                         <div class="row align-items-center">
                             <div class="col-md-12">

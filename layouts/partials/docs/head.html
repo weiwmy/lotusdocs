@@ -1,17 +1,17 @@
 <head>
     <meta charset="utf-8" />
     <title>
-        {{- $url := replace .Permalink ( printf "%s" .Site.BaseURL) "" }}
+        {{- $url := replace .Permalink (printf "%s" site.BaseURL) "" }}
         {{- if eq $url "/" }}
-            {{- .Site.Title }}
+            {{- site.Title }}
         {{- else }}
             {{- if .Params.heading }}
                 {{ .Params.heading }}
             {{ else }}
-                {{- if eq .Title .Site.Title }}
+                {{- if eq .Title site.Title }}
                     {{- .Title }}
                 {{- else }}
-                    {{- .Title }} | {{ .Site.Params.docs.Title | default (.Site.Title) }}
+                    {{- .Title }} | {{ site.Params.docs.Title | default (site.Title) }}
                 {{- end }}
             {{- end }}
         {{- end -}}
@@ -20,45 +20,61 @@
     <meta name="robots" content="noindex">
     {{- end }}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="{{ .Permalink }}">
     {{- with .Description | default ($.Param "description") }}
     <meta name="description" content="{{ . }}">
     {{- end }}
-    <meta name="keywords" content="Documentation, Hugo, Hugo Theme, Bootstrap" />
-    <meta name="author" content="weiwmy - Weitheme" />
-    <meta name="email" content="support@weiwmy.com" />
-    <meta name="website" content="https://weiwmy.com" />
-    <meta name="Version" content="v1.0.0" />
+    {{- with .Params.keywords | default site.Params.docs.keywords }}
+    <meta name="keywords" content="{{ delimit . `, ` }}">
+    {{- end }}
+    <meta name="author" content="{{ site.Params.docs.author | default "weiwmy" }}">
+    {{- with site.Params.docs.email }}
+    <meta name="email" content="{{ . }}">
+    {{- end }}
+    {{- with site.Params.docs.website }}
+    <meta name="website" content="{{ . }}">
+    {{- end }}
+    
+    <!-- Open Graph / Facebook -->
+    {{ template "_internal/opengraph.html" . }}
+    <!-- Twitter -->
+    {{ template "_internal/twitter_cards.html" . }}
+
     <!-- favicon -->
-    {{ block "favicon" . }}{{ partialCached (printf "%s/%s" ($.Scratch.Get "pathName") "head/favicon.html") . }}{{ end }}
+    {{- $pathName := page.Store.Get "pathName" -}}
+    {{- block "favicon" . }}{{ partialCached (printf "%s/head/favicon.html" (page.Store.Get "pathName")) . }}{{ end -}}
+    
     <!-- Dark Mode -->
-    {{ if eq .Site.Params.docs.darkMode true -}}
-        {{ $darkModeInit := resources.Get (printf "/%s/%s" ($.Scratch.Get "pathName") "js/darkmode-init.js") | js.Build | minify -}}
+    {{- if site.Params.docs.darkMode -}}
+        {{- $darkModeInit := resources.Get (printf "/%s/js/darkmode-init.js" $pathName) | js.Build | minify -}}
         <script>{{ $darkModeInit.Content | safeJS }}</script>
-    {{ end -}}
-    <!-- FlexSearch -->
-    {{ if or (not (isset .Site.Params.flexsearch "enabled")) (eq .Site.Params.flexsearch.enabled true) }}
-    {{ $flexSearch := resources.Get (printf "/%s/%s" ($.Scratch.Get "pathName") "js/flexsearch.bundle.js") }}
-    {{- if not hugo.IsServer }}
-        {{ $flexSearch := $flexSearch | minify | fingerprint "sha384" }}
-        <script type="text/javascript" src="{{ $flexSearch.Permalink }}" integrity="{{ $flexSearch.Data.Integrity }}" crossorigin="anonymous"></script>
-    {{- else }}
-        <script type="text/javascript" src="{{ $flexSearch.Permalink }}"></script>
-    {{- end }}
-    {{ end }}
-    <!-- Custom CSS -->
-    {{- $options := dict "enableSourceMap" true }}
-    {{- if hugo.IsProduction}}
-        {{- $options := dict "enableSourceMap" false "outputStyle" "compressed" }}
-    {{- end }}
-    {{- $style := resources.Get (printf "/%s/%s" ($.Scratch.Get "pathName") "scss/style.scss") }}
-    {{- $style = $style | resources.ExecuteAsTemplate (printf "/%s/%s" ($.Scratch.Get "pathName") "scss/style.scss") . | css.Sass $options }}
-    {{- if hugo.IsProduction }}
-        {{- $style = $style | minify | fingerprint "sha384" }}
     {{- end -}}
-    <link rel="stylesheet" href="{{ $style.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $style.Data.Integrity }}"{{ end -}} crossorigin="anonymous">
+    
+    <!-- FlexSearch -->
+    {{- if site.Params.flexsearch.enabled | default true -}}
+        {{- $flexSearch := resources.Get (printf "/%s/js/flexsearch.bundle.js" $pathName) -}}
+        {{- if not hugo.IsServer -}}
+            {{- $flexSearch := $flexSearch | minify | fingerprint "sha384" -}}
+            <script type="text/javascript" src="{{ $flexSearch.Permalink }}" integrity="{{ $flexSearch.Data.Integrity }}" crossorigin="anonymous"></script>
+        {{- else -}}
+            <script type="text/javascript" src="{{ $flexSearch.Permalink }}"></script>
+        {{- end -}}
+    {{- end -}}
+    
+    <!-- Custom CSS -->
+    {{- $options := dict "enableSourceMap" (not hugo.IsProduction) "outputStyle" (cond hugo.IsProduction "compressed" "expanded") -}}
+    {{- $style := resources.Get (printf "/%s/scss/style.scss" $pathName) -}}
+    {{- if $style -}}
+        {{- $style = $style | resources.ExecuteAsTemplate (printf "/%s/scss/style.scss" $pathName) . | css.Sass $options -}}
+        {{- if hugo.IsProduction -}}
+            {{- $style = $style | minify | fingerprint "sha384" -}}
+        {{- end -}}
+        <link rel="stylesheet" href="{{ $style.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $style.Data.Integrity }}"{{ end }} crossorigin="anonymous">
+    {{- end -}}
+
     <!-- Google Analytics v4 Config -->
     {{- if not hugo.IsServer }}
-    {{- if .Site.Config.Services.GoogleAnalytics.ID }}
+    {{- if site.Config.Services.GoogleAnalytics.ID }}
         {{- template "_internal/google_analytics.html" . -}}
     {{- end -}}
     {{- end -}}

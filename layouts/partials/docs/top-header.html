@@ -2,7 +2,7 @@
 <div id="top-header" class="top-header d-print-none">
     <div class="header-bar d-flex justify-content-between">
         <div class="d-flex align-items-center">
-            <a href='{{ with .Site.Params.docs.logoLinkURL }}{{ . }}{{ else }}{{ relLangURL "" }}{{ end }}' class="logo-icon me-3" aria-label="HomePage" alt="HomePage">
+            <a href='{{ with site.Params.docs.logoLinkURL }}{{ . }}{{ else }}{{ relLangURL site.Home.RelPermalink }}{{ end }}' class="logo-icon me-3" aria-label="HomePage" alt="HomePage">
                 <div class="small">
                     {{ with resources.Get "images/logos/mark.svg" }}
                             {{ .Content | safeHTML }}
@@ -17,7 +17,7 @@
             <button id="close-sidebar" class="btn btn-icon btn-soft">
                 <span class="material-icons size-20 menu-icon align-middle">menu</span>
             </button>
-            {{ if or (not (isset .Site.Params.flexsearch "enabled")) (eq .Site.Params.flexsearch.enabled true) -}}
+            {{ if site.Params.flexsearch.enabled | default true -}}
                 <button id="flexsearch-button" class="ms-3 btn btn-soft" data-bs-toggle="collapse" data-bs-target="#FlexSearchCollapse" aria-expanded="false" aria-controls="FlexSearchCollapse">
                     <span class="material-icons size-20 menu-icon align-middle">search</span>
                     <span class="flexsearch-button-placeholder ms-1 me-2 d-none d-sm-block">{{ i18n "search_title" }}</span>
@@ -37,7 +37,7 @@
 
         <div class="d-flex align-items-center">
             <ul class="list-unstyled mb-0">
-                {{ with $.Scratch.Get "social_list" }}
+                {{ with page.Store.Get "social_list" }}
                 {{ range . }}
                     {{ $path := printf "images/social/%s.%s" . "svg" }}
                     <li class="list-inline-item mb-0 me-0">
@@ -52,7 +52,7 @@
                     {{ end }}
                 {{ end }}
             </ul>
-            {{ if eq .Site.Params.docs.darkMode true -}}
+            {{ if site.Params.docs.darkMode -}}
             <button id="mode" class="btn btn-icon btn-default ms-2" type="button" aria-label="Toggle user interface mode">
                 <span class="toggle-dark">
                     <svg xmlns="http://www.w3.org/2000/svg" height="28" width="28" viewBox="0 0 48 48" fill="currentColor">
@@ -74,14 +74,14 @@
                         {{ site.Language.Lang | upper }}
                     </button>
                     <ul class="dropdown-menu text-end">
-                        {{ partial (printf "%s/%s" ($.Scratch.Get "pathName") "i18nlist") . }}
+                        {{ partial (printf "%s/i18nlist.html" (page.Store.Get "pathName")) . }}
                     </ul>
                 </div>
             {{ end }}
         </div>
     </div>
     <!-- FlexSearch Input Start -->
-    {{ if or (not (isset .Site.Params.flexsearch "enabled")) (eq .Site.Params.flexsearch.enabled true) -}}
+    {{ if site.Params.flexsearch.enabled | default true -}}
         <div class="collapse" id="FlexSearchCollapse">
             <div class="flexsearch-container">
                 <div class="flexsearch-keymap">

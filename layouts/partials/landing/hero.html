@@ -1,6 +1,6 @@
-{{ $sectionTitle := .Scratch.Get "sectionTitle" }}
-{{ with (index .Site.Data.landing $sectionTitle) }}
-{{ if eq .enable true }}
+{{- $sectionTitle := page.Store.Get "sectionTitle" -}}
+{{- with (index hugo.Data.landing $sectionTitle) -}}
+{{- if .enable }}
 <!-- Hero Start -->
 {{ with .backgroundImage }}
     {{ $path := .path | default "images" }}
@@ -31,7 +31,7 @@
             <div class="col-lg-6 col-md-6">
                 <div class="title-heading">
                     {{ with .badge }}
-                    <span class="badge {{ if eq .pill true }}rounded-pill{{ end }} bg-{{ if eq .soft true }}soft-{{ else }}hard-{{ end }}{{ .color }} mb-1">{{ .text }}</span>
+                    <span class="badge {{ if .pill }}rounded-pill{{ end }} bg-{{ if .soft }}soft-{{ else }}hard-{{ end }}{{ .color }} mb-1">{{ .text }}</span>
                     {{ end }}
                     <h4 class="heading mt-0 mb-3">
                         {{ with .titleLogo }}

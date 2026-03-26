@@ -87,10 +87,10 @@
 
     var index = new FlexSearch.Document({
         // charset: "latin:default",
-        tokenize: {{ .Site.Params.flexsearch.tokenize | default "forward" }},
-        minlength: {{ .Site.Params.flexsearch.minQueryChar | default 0}},
-        cache: {{ .Site.Params.flexsearch.cache | default 100 }},
-        optimize: {{ .Site.Params.flexsearch.optimize | default true }},
+        tokenize: {{ site.Params.flexsearch.tokenize | default "forward" }},
+        minlength: {{ site.Params.flexsearch.minQueryChar | default 0}},
+        cache: {{ site.Params.flexsearch.cache | default 100 }},
+        optimize: {{ site.Params.flexsearch.optimize | default true }},
         document: {
         id: 'id',
         store: [
@@ -120,18 +120,19 @@
     // https://discourse.gohugo.io/t/range-length-or-last-element/3803/2
 
     {{ $list := slice }}
-    {{- if and (isset .Site.Params.flexsearch "searchsectionsindex") (not (eq (len .Site.Params.flexsearch.searchSectionsIndex) 0)) }}
-        {{- if eq .Site.Params.flexsearch.searchSectionsIndex "ALL" }}
-            {{- $list = .Site.Pages }}
+    {{- if and (isset site.Params.flexsearch "searchsectionsindex") (not (eq (len site.Params.flexsearch.searchSectionsIndex) 0)) }}
+        {{- if eq site.Params.flexsearch.searchSectionsIndex "ALL" }}
+            {{- $list = site.Pages }}
         {{- else }}
-            {{- $list = (where .Site.Pages "Type" "in" .Site.Params.flexsearch.searchSectionsIndex) }}
-        {{- if (in .Site.Params.flexsearch.searchSectionsIndex "HomePage") }}
-            {{ $list = $list | append .Site.Home }}
-        {{- end }}
+            {{- $list = (where site.Pages "Type" "in" site.Params.flexsearch.searchSectionsIndex) }}
+            {{- if (in site.Params.flexsearch.searchSectionsIndex "HomePage") }}
+                {{ $list = $list | append site.Home }}
+            {{- end }}
         {{- end }}
     {{- else }}
-        {{- $list = (where .Site.Pages "Section" ($.Scratch.Get "pathName")) }}
+        {{- $list = (where site.Pages "Section" (page.Store.Get "pathName")) }}
     {{- end }}
+
 
     {{ $len := (len $list) -}}
 
@@ -154,8 +155,8 @@
     search.addEventListener('input', show_results, true);
 
     function show_results(){
-        const maxResult = {{ .Site.Params.flexsearch.maxResult | default 5}};
-        const minlength = {{ .Site.Params.flexsearch.minQueryChar | default 0}};
+        const maxResult = {{ site.Params.flexsearch.maxResult | default 5}};
+        const minlength = {{ site.Params.flexsearch.minQueryChar | default 0}};
         var searchQuery = sanitizeHTML(this.value);
         var results = index.search(searchQuery, {limit: maxResult, enrich: true});
 
