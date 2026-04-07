@@ -2,7 +2,7 @@
 <header id="topnav">
     <div class="container d-flex justify-content-between align-items-center">
         <!-- Logo container-->
-        <a class="logo" aria-label="Home" href='{{ relLangURL "" }}'>
+        <a class="logo" aria-label="Home" href='{{ site.Home.RelPermalink }}'>
             {{ with resources.Get "images/logos/mark.svg" }}
                 {{ .Content | safeHTML }}
             {{ end }}
@@ -14,21 +14,20 @@
             <div id="navigation">
                 <!-- Navigation Menu -->
                 <ul class="navigation-menu nav-right">
-                    {{- range .Site.Menus.primary }}
-                    <li><a href="{{ relLangURL .URL }}">{{ .Name }}</a></li>
+                    {{- range site.Menus.primary }}
+                    <li><a href="{{ with .Page }}{{ .RelPermalink }}{{ else }}{{ .URL }}{{ end }}">{{ .Name }}</a></li>
                     {{ end }}
                 </ul><!--end navigation menu-->
             </div><!--end navigation-->
 
             <!-- Social Links Start -->
-            {{ with $.Scratch.Get "social_list" }}
+            {{ with page.Store.Get "social_links" }}
             <ul class="social-link d-flex list-inline mb-0">
                 {{ range . }}
-                    {{ $path := printf "images/social/%s.%s" . "svg" }}
                     <li class="list-inline-item mb-0 me-0">
-                        <a href="{{ if eq . `rss` }} {{ `index.xml` | absURL }} {{ else }} https://{{ . }}.com/{{ index site.Params.social . }} {{ end }}" alt="{{ . }}" rel="noopener noreferrer" target="_blank">
+                        <a href="{{ .href }}" aria-label="{{ .name }}" rel="noopener noreferrer" target="_blank">
                             <div class="btn btn-icon btn-landing border-0">
-                                {{ with resources.Get $path }}
+                                {{ with resources.Get .iconPath }}
                                     {{ .Content | safeHTML }}
                                 {{ end }}
                             </div>

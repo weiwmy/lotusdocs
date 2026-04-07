@@ -21,7 +21,7 @@
 
 {{- if site.Params.docs.prism -}}
     {{- $prism := resources.Get (printf "/%s/%s" $pathName "js/prism.js") -}}
-    {{- $opts := dict "params" (dict "langPath" (urls.JoinPath site.BaseURL "docs/js/components/")) -}}
+    {{- $opts := dict "params" (dict "langPath" (urls.JoinPath site.BaseURL $pathName "js/components/")) -}}
     {{- $prism := $prism | js.Build $opts -}}
     {{- $slice = $slice | append $prism -}}
 {{- end -}}
@@ -40,7 +40,7 @@
 {{- $bundle := $slice | resources.Concat (printf "/%s/%s" $pathName "js/bundle.js") -}}
 {{- if not hugo.IsServer -}}
     {{- $bundle = $bundle | minify | fingerprint "sha384" -}}
-    <script type="text/javascript" src="{{ $bundle.Permalink }}" integrity="{{ $bundle.Data.Integrity }}" crossorigin="anonymous" defer></script>
+    <script type="text/javascript" src="{{ $bundle.RelPermalink }}" integrity="{{ $bundle.Data.Integrity }}" crossorigin="anonymous" defer></script>
 {{- else -}}
-    <script type="text/javascript" src="{{ $bundle.Permalink }}" defer></script>
+    <script type="text/javascript" src="{{ $bundle.RelPermalink }}" defer></script>
 {{- end -}}

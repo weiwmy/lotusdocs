@@ -19,7 +19,7 @@
     </li>
 {{ else }}
     <li class="{{ if .nested }}{{ if ne site.Params.docs.sidebarIcons true }}no-icon{{ end }}{{ end }}">
-        <a class="{{ if .nested }}sidebar-nested-link{{ else }}sidebar-root-link{{ end }}" href="{{ $section.Permalink }}">
+        <a class="{{ if .nested }}sidebar-nested-link{{ else }}sidebar-root-link{{ end }}" href="{{ $section.RelPermalink }}">
             {{ if and (not .nested) (site.Params.docs.sidebarIcons) -}}
                 <i class="material-icons me-2">{{ $section.Params.icon | default "notes" }}</i>
             {{ end }}

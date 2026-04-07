@@ -1,7 +1,21 @@
 {{- $sectionTitle := page.Store.Get "sectionTitle" -}}
 {{- with (index hugo.Data.landing $sectionTitle) -}}
 {{- if .enable }}
-{{- page.Store.Set "image_compare_enabled" true -}}
+{{- $items := slice -}}
+{{- range .items -}}
+    {{- $title := .title -}}
+    {{- $config := .config -}}
+    {{- $path := .imagePath | default "images" -}}
+    {{- $pathBefore := printf "%s/%s" $path .imageBefore -}}
+    {{- $pathAfter := printf "%s/%s" $path .imageAfter -}}
+    {{- with resources.Get $pathBefore -}}
+        {{- $before := . -}}
+        {{- with resources.Get $pathAfter -}}
+            {{- $items = $items | append (dict "title" $title "config" $config "before" $before "after" .) -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+{{- if gt (len $items) 0 -}}
 <section id="{{ $sectionTitle }}">
     <div class="container mt-100 mt-60">
         <div class="row justify-content-center">
@@ -20,7 +34,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-8 col-md-12 mt-3 pt-2 text-center">
                 <ul class="nav nav-pills nav-justified flex-column flex-sm-row rounded bg-primary" id="pills-tab-{{ $sectionTitle }}" role="tablist">
-                    {{ range $index, $value := .items }}
+                    {{ range $index, $value := $items }}
                         <li class="nav-item">
                             <a class="nav-link rounded{{ if (eq $index 0) }} active{{ end }}" id="{{ anchorize .title }}-tab" data-bs-toggle="pill" href="#pills-{{ $sectionTitle }}-{{ anchorize .title }}" role="tab" aria-controls="pills-{{ anchorize .title }}" aria-selected="false">
                                 <div class="text-center py-2">
@@ -36,31 +50,19 @@
         <div class="row">
             <div class="col-12 mt-4 pt-2">
                 <div class="tab-content" id="pills-tab-{{ $sectionTitle }}Content">
-                    {{ range $index, $value := .items }}
-                    {{ page.Store.Add "config" (slice .config) }}
+                    {{ range $index, $value := $items }}
                     <div class="tab-pane fade show{{ if (eq $index 0) }} active{{ end }}" id="pills-{{ $sectionTitle }}-{{ anchorize .title }}" role="tabpanel" aria-labelledby="{{ anchorize .title }}-tab">
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 {{ $title := .title }}
-                                {{ $path := .imagePath | default "images" }}
-                                {{ $imageBefore := .imageBefore }}
-                                {{ $imageAfter := .imageAfter }}
-                                {{ $pathBefore := printf "%s/%s" $path $imageBefore }}
-                                {{ $pathAfter := printf "%s/%s" $path $imageAfter }}
-                                {{ with and $imageBefore $imageAfter }}
-                                    <div id="{{ anchorize $title }}-compare" class="image-compare rounded-md border">
-                                        {{ with $imgBefore := resources.Get $pathBefore }}
-                                            {{ with .Resize (printf "%dx webp" .Width) }}
-                                                <img src="{{ .RelPermalink }}" alt="{{ $title }} before" loading="lazy" />
-                                            {{ end }}
-                                        {{ end }}
-                                        {{ with $imgAfter := resources.Get $pathAfter }}
-                                            {{ with .Resize (printf "%dx webp" .Width) }}
-                                                <img src="{{ .RelPermalink }}" alt="{{ $title }} after" loading="lazy" />
-                                            {{ end }}
-                                        {{ end }}
-                                    </div>
-                                {{ end }}
+                                <div id="{{ anchorize $title }}-compare" class="image-compare rounded-md border" data-image-compare-options="{{ .config | jsonify | htmlEscape }}">
+                                    {{ with .before.Resize (printf "%dx webp" .before.Width) }}
+                                        <img src="{{ .RelPermalink }}" alt="{{ $title }} before" loading="lazy" />
+                                    {{ end }}
+                                    {{ with .after.Resize (printf "%dx webp" .after.Width) }}
+                                        <img src="{{ .RelPermalink }}" alt="{{ $title }} after" loading="lazy" />
+                                    {{ end }}
+                                </div>
                             </div><!--end col-->
                         </div><!--end row-->
                     </div><!--end teb pane-->
@@ -70,5 +72,6 @@
         </div><!--end row-->
     </div><!--end container-->
 </section>
+{{- end -}}
 {{ end }}
 {{ end }}

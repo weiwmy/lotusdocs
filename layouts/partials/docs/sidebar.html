@@ -1,7 +1,7 @@
 <!-- sidebar-wrapper -->
 <nav id="sidebar" class="sidebar-wrapper">
     <div class="sidebar-brand">
-        <a href='{{ with site.Params.docs.logoLinkURL }}{{ . }}{{ else }}{{ relLangURL site.Home.RelPermalink }}{{ end }}' aria-label="HomePage" alt="HomePage">
+        <a href='{{ page.Store.Get "docs_home_href" }}' aria-label="HomePage">
             {{ with resources.Get "images/logos/logo.svg" }}
                 {{ .Content | safeHTML }}
             {{ end }}

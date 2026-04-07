@@ -6,6 +6,6 @@
     </div>
 
     {{ if and .GitInfo site.Params.docs.repoURL -}}
-        {{ partial (printf "%s/%s" ($.Scratch.Get "pathName") "gitinfo") . }}
+        {{ partial (printf "%s/%s" (page.Store.Get "pathName") "gitinfo") . }}
     {{ end -}}
 {{ end }}

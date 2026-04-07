@@ -6,15 +6,15 @@
 {{ range .Translations }}
     <!-- Create 'available translations' slice -->
     {{ $translations = $translations | append .Lang }}
-    <li><a class="dropdown-item" href="{{ .RelPermalink }}" role="button" rel="alternate" hreflang="{{ .Lang }}" lang="{{ .Lang }}">{{ .Language.LanguageName }}</a></li>
+    <li><a class="dropdown-item" href="{{ .RelPermalink }}" role="button" rel="alternate" hreflang="{{ .Language.Locale }}" lang="{{ .Language.Locale }}">{{ .Language.Label }}</a></li>
 {{ end }}
 
 <!-- List of configured languages without a translation for the current page (link to doc root) -->
-{{ range site.Languages }}
+{{ range site.Home.AllTranslations }}
     {{ if ne $pageLang .Lang }}
         <!-- If .Lang is NOT in the 'available translations' slice, add it -->
         {{ if not (in $translations .Lang) }}
-            <li><a class="dropdown-item" href="{{ .Lang | relURL }}/{{ $docspath }}" role="button" rel="alternate" hreflang="{{ .Lang }}" lang="{{ .Lang }}">{{ .LanguageName }}</a></li>
+            <li><a class="dropdown-item" href="{{ printf "%s%s/" .RelPermalink $docspath }}" role="button" rel="alternate" hreflang="{{ .Language.Locale }}" lang="{{ .Language.Locale }}">{{ .Language.Label }}</a></li>
         {{ end }}
     {{ end }}
 {{ end }}

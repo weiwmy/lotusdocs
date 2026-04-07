@@ -1,20 +1,47 @@
 <head>
     <meta charset="utf-8" />
     {{- $pathName := page.Store.Get "pathName" -}}
+    {{- $pageTitle := site.Title -}}
+    {{- if .Params.heading -}}
+        {{- $pageTitle = .Params.heading -}}
+    {{- else if not .IsHome -}}
+        {{- if ne .Title site.Title -}}
+            {{- $pageTitle = printf "%s | %s" .Title (site.Params.docs.Title | default site.Title) -}}
+        {{- else -}}
+            {{- $pageTitle = .Title -}}
+        {{- end -}}
+    {{- end -}}
     <!-- Preload Critical Assets -->
     {{- with resources.Get (printf "/%s/fonts/JetBrainsMono-Regular.woff2" $pathName) -}}
     <link rel="preload" href="{{ .RelPermalink }}" as="font" type="font/woff2" crossorigin>
     {{- end -}}
-    {{- range (index hugo.Data.landing) -}}
-        {{- if eq .template "hero" -}}
-            {{- with .image -}}
-                {{- $path := printf "%s/%s" (.path | default "images") .filename -}}
-                {{- with resources.Get $path -}}
-                    {{- with .Resize (printf "%dx%d webp q85 Lanczos" .Width .Height) -}}
-                    <link rel="preload" href="{{ .RelPermalink }}" as="image" fetchpriority="high">
+    {{- with index hugo.Data.landing "hero" -}}
+        {{- $heroResource := false -}}
+        {{- with .image -}}
+            {{- if .enable | default true -}}
+                {{- with resources.Get (printf "%s/%s" (.path | default "images") .filename) -}}
+                    {{- $heroResource = . -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+        {{- if not $heroResource -}}
+            {{- with .backgroundImage -}}
+                {{- if .enable | default true -}}
+                    {{- $bgPath := .path | default "images" -}}
+                    {{- $heroImagePath := "" -}}
+                    {{- with .filename.mobile -}}
+                        {{- $heroImagePath = printf "%s/%s" $bgPath . -}}
+                    {{- else with .filename.desktop -}}
+                        {{- $heroImagePath = printf "%s/%s" $bgPath . -}}
+                    {{- end -}}
+                    {{- with resources.Get $heroImagePath -}}
+                        {{- $heroResource = . -}}
                     {{- end -}}
                 {{- end -}}
             {{- end -}}
+        {{- end -}}
+        {{- with $heroResource -}}
+            <link rel="preload" href="{{ .RelPermalink }}" as="image" fetchpriority="high">
         {{- end -}}
     {{- end -}}
     <!-- Turbo JS -->
@@ -31,20 +58,7 @@
 
 
     <title>
-        {{- $url := replace .Permalink (printf "%s" site.BaseURL) "" }}
-        {{- if eq $url "/" }}
-            {{- site.Title }}
-        {{- else }}
-            {{- if .Params.heading }}
-                {{ .Params.heading }}
-            {{ else }}
-                {{- if eq .Title site.Title }}
-                    {{- .Title }}
-                {{- else }}
-                    {{- .Title }} | {{ site.Params.docs.Title | default (site.Title) }}
-                {{- end }}
-            {{- end }}
-        {{- end -}}
+        {{- $pageTitle -}}
     </title>
     {{- if not hugo.IsProduction }}
     <meta name="robots" content="noindex">
@@ -71,8 +85,7 @@
     {{ template "_internal/twitter_cards.html" . }}
 
     <!-- favicon -->
-    {{- $pathName := page.Store.Get "pathName" -}}
-    {{- block "favicon" . }}{{ partialCached (printf "%s/head/favicon.html" (page.Store.Get "pathName")) . }}{{ end -}}
+    {{- block "favicon" . }}{{ partialCached (printf "%s/head/favicon.html" (page.Store.Get "pathName")) . (page.Store.Get "pathName") }}{{ end -}}
     
     <!-- Dark Mode -->
     {{- if site.Params.docs.darkMode -}}
@@ -85,9 +98,9 @@
         {{- $flexSearch := resources.Get (printf "/%s/js/flexsearch.bundle.js" $pathName) -}}
         {{- if not hugo.IsServer -}}
             {{- $flexSearch := $flexSearch | minify | fingerprint "sha384" -}}
-            <script type="text/javascript" src="{{ $flexSearch.Permalink }}" integrity="{{ $flexSearch.Data.Integrity }}" crossorigin="anonymous" defer></script>
+            <script type="text/javascript" src="{{ $flexSearch.RelPermalink }}" integrity="{{ $flexSearch.Data.Integrity }}" crossorigin="anonymous" defer></script>
         {{- else -}}
-            <script type="text/javascript" src="{{ $flexSearch.Permalink }}" defer></script>
+            <script type="text/javascript" src="{{ $flexSearch.RelPermalink }}" defer></script>
         {{- end -}}
     {{- end -}}
     

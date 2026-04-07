@@ -2,7 +2,7 @@
 {{ $text := .PlainText }}
 {{ $url := urls.Parse $dest }}
 
-{{ $image := newScratch }}
+{{ $image := hugo.NewScratch }}
 {{ with $url.Scheme }}
   {{  $image.Set "resource" (resources.GetRemote $dest) }}
 {{ else }}

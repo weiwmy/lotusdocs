@@ -1,5 +1,5 @@
 <!-- Prism Render Hook -->
-{{ if eq .Pagesite.Params.docs.prism true }}
+{{ if eq site.Params.docs.prism true }}
   {{- $attributes := .Attributes }}
   {{- $ordinal := .Ordinal }}
 
@@ -11,7 +11,7 @@
 
   <!-- Options List -->
   {{- $options := .Options }}
-  {{ $optionslist := newScratch }}
+  {{ $optionslist := hugo.NewScratch }}
   {{ range $k, $v := $options }}
     {{ $optionslist.Add "options" (printf " %s" $k) }}
   {{ end }}
@@ -28,7 +28,7 @@
       {{ $offset = 1 }}
     {{ end }}
 
-    {{ $data := newScratch }}
+    {{ $data := hugo.NewScratch }}
     {{ range $value := $lines }}
       {{ $value = uniq $value }}
       {{ if lt (len $value) 2 }}

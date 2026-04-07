@@ -2,9 +2,8 @@
 {{- $pathName := site.Params.docs.pathName | default "docs" -}}
 {{- page.Store.Set "pathName" $pathName -}}
 {{- partial (printf "%s/social-list.html" $pathName) . -}}
-{{ $ic := page.Store }}
 
-<html lang="{{ site.LanguageCode }}" dir="ltr">
+<html lang="{{ site.Language.Locale }}" dir="{{ or site.Language.Direction `ltr` }}">
     {{- partial "head.html" . -}}
     <body>
         <div>
@@ -19,24 +18,21 @@
         {{ $app := resources.Get "/js/app.js" }}
         {{- if not hugo.IsServer }}
             {{- $js := (slice $app) | resources.Concat "/js/bundle.js" | minify | fingerprint "sha384" }}
-            <script type="text/javascript" src="{{ $js.Permalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+            <script type="text/javascript" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
         {{- else }}
             {{- $js := (slice $app) | resources.Concat "/js/bundle.js" }}
-            <script type="text/javascript" src="{{ $js.Permalink }}" {{ if hugo.IsProduction }}integrity="{{ $js.Data.Integrity }}"{{ end }}></script>
+            <script type="text/javascript" src="{{ $js.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $js.Data.Integrity }}"{{ end }}></script>
         {{- end }}
 
-        <!-- Image Compare Viewer Config -->
-        {{ if page.Store.Get "image_compare_enabled" }}
         <script>
             const viewers = document.querySelectorAll(".image-compare");
-            let configs = [
-                {{ (delimit ($ic.Get `config`) `,`) | safeJS }}
-            ];
-            viewers.forEach((element, i) => {
-                let view = new ImageCompare(element, configs[i]).mount();
-            });
+            if (typeof ImageCompare === "function" && viewers.length) {
+                viewers.forEach((element) => {
+                    const options = JSON.parse(element.dataset.imageCompareOptions || "{}");
+                    new ImageCompare(element, options).mount();
+                });
+            }
         </script>
-        {{ end }}
 
     </body>
 </html>

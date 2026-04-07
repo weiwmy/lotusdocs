@@ -2,7 +2,7 @@
 <div id="top-header" class="top-header d-print-none">
     <div class="header-bar d-flex justify-content-between">
         <div class="d-flex align-items-center">
-            <a href='{{ with site.Params.docs.logoLinkURL }}{{ . }}{{ else }}{{ relLangURL site.Home.RelPermalink }}{{ end }}' class="logo-icon me-3" aria-label="HomePage" alt="HomePage">
+            <a href='{{ page.Store.Get "docs_home_href" }}' class="logo-icon me-3" aria-label="HomePage">
                 <div class="small">
                     {{ with resources.Get "images/logos/mark.svg" }}
                             {{ .Content | safeHTML }}
@@ -37,13 +37,12 @@
 
         <div class="d-flex align-items-center">
             <ul class="list-unstyled mb-0">
-                {{ with page.Store.Get "social_list" }}
+                {{ with page.Store.Get "social_links" }}
                 {{ range . }}
-                    {{ $path := printf "images/social/%s.%s" . "svg" }}
                     <li class="list-inline-item mb-0 me-0">
-                        <a href="{{ if eq . `rss` }} {{ `index.xml` | absURL }} {{ else }} https://{{ . }}.com/{{ index site.Params.social . }} {{ end }}" alt="{{ . }}" rel="noopener noreferrer" target="_blank">
+                        <a href="{{ .href }}" aria-label="{{ .name }}" rel="noopener noreferrer" target="_blank">
                             <div class="btn btn-icon btn-default border-0 w-100">
-                                {{ with resources.Get $path }}
+                                {{ with resources.Get .iconPath }}
                                     {{ .Content | safeHTML }}
                                 {{ end }}
                             </div>
@@ -71,7 +70,7 @@
             {{ if hugo.IsMultilingual }}
                 <div class="dropdown">
                     <button class="btn btn-link btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        {{ site.Language.Lang | upper }}
+                        {{ site.Language.Label | default (site.Language.Name | upper) }}
                     </button>
                     <ul class="dropdown-menu text-end">
                         {{ partial (printf "%s/i18nlist.html" (page.Store.Get "pathName")) . }}

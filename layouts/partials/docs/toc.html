@@ -1,8 +1,8 @@
 <toc>
     <div class="fw-bold text-uppercase mb-2">On this page</div>
     {{ if site.Params.docs.scrollSpy -}}
-        {{ .TableOfContents | replaceRE "<nav id=\"TableOfContents\">" "<nav id=\"toc\">" | safeHTML }}
+           {{ .TableOfContents | replaceRE "<nav id=\"TableOfContents\">" "<nav id=\"toc\">" | safeHTML }}
     {{ else -}}
-        {{ .TableOfContents }}
+           {{ .TableOfContents }}
     {{ end -}}
 </toc>

@@ -1,8 +1,10 @@
 {{- $pathName := site.Params.docs.pathName | default "docs" -}}
+{{- $docsHomeHref := site.Params.docs.logoLinkURL | default site.Home.RelPermalink -}}
 {{- page.Store.Set "pathName" $pathName -}}
+{{- page.Store.Set "docs_home_href" $docsHomeHref -}}
 {{- partial (printf "%s/social-list.html" $pathName) . -}}
 
-<html lang="{{ site.LanguageCode }}">
+<html lang="{{ site.Language.Locale }}" dir="{{ or site.Language.Direction `ltr` }}">
     {{- partial (printf "%s/head.html" $pathName) . -}}
     <body>
         <div class="content">
@@ -14,7 +16,7 @@
                         {{ if hugo.IsMultilingual }}
                             {{- partial (printf "%s/top-header.html" $pathName) . -}}
                         {{ else }}
-                            {{- partialCached (printf "%s/top-header.html" $pathName) . -}}
+                            {{- partialCached (printf "%s/top-header.html" $pathName) . $pathName -}}
                         {{ end }}
                             <div class="container-fluid">
                                 <div class="layout-spacing">
@@ -40,7 +42,7 @@
                                         </div>
                                         {{- end -}}
 
-                                        <div class="docs-content col-12 {{ if and (not .IsNode) (site.Params.docs.toc | default true) (ne .Params.toc false) (ne .TableOfContents `<nav id="TableOfContents"></nav>`) }}col-xl-9{{ end }} mt-0">
+                                        <div class="docs-content col-12 {{ if and (not .IsNode) (site.Params.docs.toc | default true) (ne .Params.toc false) (.TableOfContents.Headings) }}col-xl-9{{ end }} mt-0">
                                             <div class="mb-2 d-flex">
                                                 {{- if site.Params.docs.titleIcon -}}
                                                 <i class="material-icons title-icon me-2">{{- .Params.icon | default "article" }}</i>
@@ -66,7 +68,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {{- partialCached (printf "%s/footer.html" $pathName) . -}}
+                            {{- partialCached (printf "%s/footer.html" $pathName) . $pathName -}}
 
                     </main>
             </div>
@@ -87,7 +89,7 @@
         {{/* Moved to head */}}
 
         {{ if site.Params.flexsearch.enabled | default true }}
-            {{- partialCached (printf "%s/footer/flexsearch.html" $pathName) . -}}
+            {{- partialCached (printf "%s/footer/flexsearch.html" $pathName) . $pathName -}}
         {{ end }}
     </body>
 </html>

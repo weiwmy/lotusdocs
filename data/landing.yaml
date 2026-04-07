@@ -7,6 +7,7 @@ hero:
   template: hero
 
   backgroundImage:
+    enable: true
     path: "images/"
     filename:
       desktop: "hero.webp"
@@ -27,6 +28,7 @@ hero:
   title: "weiwmy's site"
   subtitle: share with you, better for us.
   image:
+    enable: false
     path: "images" # path to image under configured assets directory. default 'images'
     filename: "hero.webp" # filename of your hero image (including file extension)
     alt: "Weitheme Screenshot" # Optional but recommended

@@ -1,5 +1,4 @@
 baseURL = "https://weidocs.vercel.app/"
-languageCode = "en-GB"
 contentDir = "content"
 enableEmoji = true
 enableGitInfo = true 
@@ -7,7 +6,8 @@ defaultContentLanguage = 'en'
 [languages]
   [languages.en]
     title = "weiwmy's site"
-    languageName = "English"
+        label = "English"
+        locale = "en-GB"
     weight = 10
 
 [module]
