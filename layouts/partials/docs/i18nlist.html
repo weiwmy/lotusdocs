@@ -1,10 +1,9 @@
-{{ $pageLang := .Page.Lang }}
-{{ $translations := slice }}
-{{ $docspath := page.Store.Get "pathName" }}
+{{- $pageLang := .Page.Lang -}}
+{{- $translations := slice -}}
+{{- $docsPath := .Store.Get "pathName" -}}
 
 <!-- List available translations (excluding current page)-->
 {{ range .Translations }}
-    <!-- Create 'available translations' slice -->
     {{ $translations = $translations | append .Lang }}
     <li><a class="dropdown-item" href="{{ .RelPermalink }}" role="button" rel="alternate" hreflang="{{ .Language.Locale }}" lang="{{ .Language.Locale }}">{{ .Language.Label }}</a></li>
 {{ end }}
@@ -14,7 +13,7 @@
     {{ if ne $pageLang .Lang }}
         <!-- If .Lang is NOT in the 'available translations' slice, add it -->
         {{ if not (in $translations .Lang) }}
-            <li><a class="dropdown-item" href="{{ printf "%s%s/" .RelPermalink $docspath }}" role="button" rel="alternate" hreflang="{{ .Language.Locale }}" lang="{{ .Language.Locale }}">{{ .Language.Label }}</a></li>
+            <li><a class="dropdown-item" href="{{ urls.JoinPath .RelPermalink $docsPath }}" role="button" rel="alternate" hreflang="{{ .Language.Locale }}" lang="{{ .Language.Locale }}">{{ .Language.Label }}</a></li>
         {{ end }}
     {{ end }}
 {{ end }}

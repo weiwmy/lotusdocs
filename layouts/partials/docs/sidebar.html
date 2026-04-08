@@ -1,7 +1,7 @@
 <!-- sidebar-wrapper -->
 <nav id="sidebar" class="sidebar-wrapper">
     <div class="sidebar-brand">
-        <a href='{{ page.Store.Get "docs_home_href" }}' aria-label="HomePage">
+        <a href='{{ .Store.Get "docs_home_href" }}' aria-label="HomePage">
             {{ with resources.Get "images/logos/logo.svg" }}
                 {{ .Content | safeHTML }}
             {{ end }}
@@ -9,14 +9,13 @@
     </div>
     <div class="sidebar-content" style="height: calc(100% - 131px);">
         <ul class="sidebar-menu">
-            {{ $currentPage := . -}}
-            {{ $section := $currentPage.Section -}}
-            {{ range (where site.Sections.ByWeight "Section" "in" $section) }}
-                {{ $child_pages := union .Sections .Pages }}
-                {{ range $child_pages.ByWeight }}
+            {{- $currentPage := . -}}
+            {{- range (where site.Sections.ByWeight "Section" "eq" $currentPage.Section) -}}
+                {{- $childPages := union .Sections .Pages -}}
+                {{- range $childPages.ByWeight -}}
                     {{ partial "docs/sidebar-recursive.html" (dict "section" . "current" $currentPage "nested" false) }}
-                {{ end }}
-            {{ end }}
+                {{- end -}}
+            {{- end -}}
         </ul>
         <!-- sidebar-menu  -->
     </div>

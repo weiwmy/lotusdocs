@@ -4,6 +4,8 @@
 {{- $filePath := replace .File.Path "\\" "/" -}}
 {{- $iconPath := "" -}}
 {{- $blobPath := "blob" -}}
+{{- $relativeLastMod := site.Params.docs.lastModRelative | default true -}}
+{{- $authoredAt := .GitInfo.AuthorDate -}}
 
 {{- if strings.Contains ($repoHostname | lower) "github" -}}
     {{- $iconPath = "images/social/github_icon.svg" -}}
@@ -37,10 +39,10 @@
     {{ if site.Params.docs.lastMod | default false -}}
     <div id="last-modified" class="mt-1">
         <p class="mb-0 fw-semibold">Last updated <span
-            {{ if site.Params.docs.lastModRelative | default true -}}id="relativetime"{{ else }}{{ end }}
-            data-authdate="{{ dateFormat "2006-01-02T15:04:05Z0700" .GitInfo.AuthorDate }}"
-            {{ if site.Params.docs.lastModRelative | default true -}}title="{{ dateFormat "02 Jan 2006, 15:04 MST" .GitInfo.AuthorDate }}"{{ else }}{{ end }}>
-            {{ dateFormat "02 Jan 2006, 15:04 MST" .GitInfo.AuthorDate }}
+            {{ if $relativeLastMod -}}id="relativetime"{{ end }}
+            data-authdate="{{ dateFormat "2006-01-02T15:04:05Z0700" $authoredAt }}"
+            {{ if $relativeLastMod -}}title="{{ dateFormat "02 Jan 2006, 15:04 MST" $authoredAt }}"{{ end }}>
+            {{ dateFormat "02 Jan 2006, 15:04 MST" $authoredAt }}
         </span>. <span class="material-icons size-20 align-text-bottom opacity-75">history</span>
         </p>
     </div>

@@ -21,7 +21,7 @@
             </div><!--end navigation-->
 
             <!-- Social Links Start -->
-            {{ with page.Store.Get "social_links" }}
+            {{ with .Store.Get "social_links" }}
             <ul class="social-link d-flex list-inline mb-0">
                 {{ range . }}
                     <li class="list-inline-item mb-0 me-0">

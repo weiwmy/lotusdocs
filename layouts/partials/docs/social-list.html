@@ -1,9 +1,10 @@
 {{- $socialLinks := slice -}}
-{{- range slice "github" "twitter" "instagram" "rss" -}}
-    {{- if isset site.Params.social . -}}
-        {{- $value := index site.Params.social . -}}
+{{- with site.Params.social }}
+    {{- $social := . -}}
+    {{- range slice "github" "twitter" "instagram" "rss" -}}
+        {{- $value := index $social . -}}
         {{- $href := "" -}}
-        {{- if eq . "rss" -}}
+        {{- if and (eq . "rss") $value -}}
             {{- with site.Home.OutputFormats.Get "rss" -}}
                 {{- $href = .RelPermalink -}}
             {{- else -}}
@@ -22,11 +23,13 @@
                 {{- $href = $value -}}
             {{- end -}}
         {{- end -}}
-        {{- $socialLinks = $socialLinks | append (dict
-            "name" .
-            "href" $href
-            "iconPath" (printf "images/social/%s.svg" .)
-        ) -}}
+        {{- if $href -}}
+            {{- $socialLinks = $socialLinks | append (dict
+                "name" .
+                "href" $href
+                "iconPath" (printf "images/social/%s.svg" .)
+            ) -}}
+        {{- end -}}
     {{- end -}}
 {{- end -}}
-{{- page.Store.Set "social_links" $socialLinks -}}
+{{- .Store.Set "social_links" $socialLinks -}}

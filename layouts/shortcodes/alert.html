@@ -1,18 +1,20 @@
-{{ $icon_array := dict
+{{- $iconMap := dict
   "info" "info"
   "warning" "warning"
   "success" "check_circle"
   "danger" "report"
   "default" "notifications"
   "primary" "info"
-}}
-<div class="alert alert-{{ with .Get "context" }}{{.}}{{ else }}default{{ end }} d-flex" role="alert">
+ -}}
+{{- $context := .Get "context" | default "default" -}}
+{{- $icon := .Get "icon" -}}
+<div class="alert alert-{{ $context }} d-flex" role="alert">
   <div class="flex-shrink-1 alert-icon">
-  {{ with .Get "icon" }}
+  {{ with $icon }}
   {{ . }}
   {{ else }}
   <span class="material-icons size-20 me-2">
-  {{ with .Get "context" }}{{ index $icon_array . }}{{ else }}{{ $icon_array.default }}{{ end }}
+  {{ index $iconMap $context | default $iconMap.default }}
   </span>
   {{- end -}}
   </div>
@@ -24,7 +26,7 @@
   {{ . }}
   </div>
   {{ else }}
-  {{ errorf "No valid text variable or Inner content given"}}
+  {{ errorf "The %q shortcode requires either text or inner content" .Name }}
   {{- end -}}
   {{- end -}}
 </div>

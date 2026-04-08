@@ -3,7 +3,7 @@
 {{ $ordinal := .Ordinal }}
 {{ $codeHash := sha1 (delimit (slice $innerRemoveLB $ordinal "prismshortcode") "") }}
 {{ $codeHashShort := substr $codeHash 0 7 }}
-{{ if len .Params | eq 0 }}
+{{ if eq (len .Params) 0 }}
   <pre id="{{ $codeHashShort }}"><code>{{ $inner }}</code></pre>
 {{ else }}
   {{ if .IsNamedParams }}

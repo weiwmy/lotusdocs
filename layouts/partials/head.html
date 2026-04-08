@@ -1,41 +1,38 @@
 <head>
     <meta charset="utf-8" />
-    <title>{{- site.Title }}</title>
+    {{- $pageTitle := .Title | default site.Title -}}
+    {{- if and (not .IsHome) (ne .Title site.Title) -}}
+        {{- $pageTitle = printf "%s | %s" .Title site.Title -}}
+    {{- end -}}
+    <title>{{- $pageTitle -}}</title>
     {{- if not hugo.IsProduction }}
     <meta name="robots" content="noindex">
     {{- end }}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Weitheme for Hugo" />
-    <meta name="keywords" content="weiwmy" />
-    <meta name="author" content="weiwmy - Weitheme" />
-    <meta name="email" content="support@weiwmy.com" />
-    <meta name="website" content="https://weiwmy.com" />
-    <meta name="Version" content="v1.0.0" />
-    <!-- favicon -->
-    {{ block "head/favicon" . }}{{ partialCached "head/favicon.html" . "global" }}{{ end }}
-    <!-- Custom CSS -->
-    {{- $options := dict "enableSourceMap" true }}
-    {{- if hugo.IsProduction}}
-        {{- $options = dict "enableSourceMap" false "outputStyle" "compressed" }}
+    {{- with .Description | default (.Param "description") }}
+    <meta name="description" content="{{ . }}" />
     {{- end }}
-    {{- $style := resources.Get "/scss/style.scss" }}
-    {{- $style = $style | resources.ExecuteAsTemplate "/scss/style.scss" . | css.Sass $options }}
+    {{- with .Params.keywords }}
+    <meta name="keywords" content="{{ delimit . `, ` }}" />
+    {{- end }}
+    <meta name="author" content="{{ site.Params.docs.author | default `weiwmy` }}" />
+    {{- with site.Params.docs.email }}
+    <meta name="email" content="{{ . }}" />
+    {{- end }}
+    {{- with site.Params.docs.website }}
+    <meta name="website" content="{{ . }}" />
+    {{- end }}
+    <meta name="Version" content="v1.0.0" />
+    {{ block "head/favicon" . }}{{ partialCached "head/favicon.html" . "global" }}{{ end }}
+    {{- $options := dict "enableSourceMap" (not hugo.IsProduction) "outputStyle" (cond hugo.IsProduction "compressed" "expanded") -}}
+    {{- with resources.Get "scss/style.scss" }}
+        {{- $style := . | resources.ExecuteAsTemplate "scss/style.scss" $ | css.Sass $options -}}
+        {{- if hugo.IsProduction }}
+            {{- $style = $style | minify | fingerprint "sha384" }}
+        {{- end -}}
+        <link rel="stylesheet" href="{{ $style.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $style.Data.Integrity }}" crossorigin="anonymous"{{ end }}>
+    {{- end }}
     {{- if hugo.IsProduction }}
-        {{- $style = $style | minify | fingerprint "sha384" }}
-    {{- end -}}
-    <link rel="stylesheet" href="{{ $style.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $style.Data.Integrity }}"{{ end -}}/>
-    <!-- Bootstrap JS -->
-    {{ $js := resources.Get "js/bootstrap.js" }}
-    {{ $params := dict }}
-    {{ $sourceMap := cond hugo.IsProduction "" "inline" }}
-    {{ $opts := dict "sourceMap" $sourceMap "minify" hugo.IsProduction "target" "es2018" "params" $params }}
-    {{ $js = $js | js.Build $opts }}
-    {{ if hugo.IsProduction }}
-        {{ $js = $js | fingerprint "sha384" }}
-    {{ end }}
-        <script src="{{ $js.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $js.Data.Integrity }}"{{ end -}} defer></script>
-    <!-- Google Analytics v4 Config -->
-    {{- if not hugo.IsServer }}
     {{- if site.Config.Services.GoogleAnalytics.ID }}
         {{- template "_internal/google_analytics.html" . -}}
     {{- end -}}

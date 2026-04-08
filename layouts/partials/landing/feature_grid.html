@@ -1,4 +1,4 @@
-{{- $sectionTitle := page.Store.Get "sectionTitle" -}}
+{{- $sectionTitle := .Store.Get "sectionTitle" -}}
 {{- with (index hugo.Data.landing $sectionTitle) -}}
 {{- if .enable }}
 <!-- Features Start -->

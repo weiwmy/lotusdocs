@@ -1,10 +1,14 @@
 <script type="module">
+    const noResultsText = {{ i18n "search_no_results" | default "No results for" | jsonify }};
+
     function initSearch() {
         const suggestions = document.getElementById('suggestions');
         const search = document.getElementById('flexsearch');
         const flexsearchContainer = document.getElementById('FlexSearchCollapse');
         const hideFlexsearchBtn = document.getElementById('hideFlexsearch');
         if (!suggestions || !search || !flexsearchContainer || !hideFlexsearchBtn) return;
+        if (search.dataset.flexsearchReady === 'true') return;
+        search.dataset.flexsearchReady = 'true';
 
         const flexsearchContainerCollapse = new Collapse(flexsearchContainer, { toggle: false });
 
@@ -12,6 +16,7 @@
         
         const topHeader = document.getElementById("top-header");
         document.addEventListener('click', (elem) => {
+            if (!topHeader) return;
             if (!flexsearchContainer.contains(elem.target) && !topHeader.contains(elem.target))
                 flexsearchContainerCollapse.hide();
         });
@@ -44,31 +49,32 @@
                 }
             });
 
-            {{ $list := slice }}
-            {{- if and (isset site.Params.flexsearch "searchsectionsindex") (not (eq (len site.Params.flexsearch.searchSectionsIndex) 0)) }}
-                {{- if eq site.Params.flexsearch.searchSectionsIndex "ALL" }}
+            {{- $searchSectionsIndex := site.Params.flexsearch.searchSectionsIndex | default (slice) -}}
+            {{- $list := slice -}}
+            {{- if gt (len $searchSectionsIndex) 0 }}
+                {{- if eq $searchSectionsIndex "ALL" }}
                     {{- $list = site.Pages }}
                 {{- else }}
-                    {{- $list = (where site.Pages "Type" "in" site.Params.flexsearch.searchSectionsIndex) }}
-                    {{- if (in site.Params.flexsearch.searchSectionsIndex "HomePage") }}
+                    {{- $list = where site.Pages "Type" "in" $searchSectionsIndex }}
+                    {{- if in $searchSectionsIndex "HomePage" }}
                         {{ $list = $list | append site.Home }}
                     {{- end }}
                 {{- end }}
             {{- else }}
-                {{- $list = (where site.Pages "Section" (page.Store.Get "pathName")) }}
+                {{- $list = (where site.Pages "Section" (.Store.Get "pathName")) }}
             {{- end }}
 
             {{ range $index, $element := $list -}}
                 window.flexSearchIndex.add({
                     id: {{ $index }},
-                    href: "{{ .RelPermalink }}",
-                    title: {{ .Title }},
+                    href: {{ .RelPermalink | jsonify }},
+                    title: {{ .Title | jsonify }},
                     {{ with .Description -}}
-                        description: {{ . }},
+                        description: {{ . | jsonify }},
                     {{ else -}}
-                        description: {{ .Summary | htmlUnescape | plainify }},
+                        description: {{ .Summary | htmlUnescape | plainify | jsonify }},
                     {{ end -}}
-                    content: {{ .Content | htmlUnescape | plainify }}
+                    content: {{ .Content | htmlUnescape | plainify | jsonify }}
                 });
             {{ end -}}
         }
@@ -98,7 +104,7 @@
 
             if (flatResults.size === 0 && searchQuery) {
                 const noResultsMessage = document.createElement('div');
-                noResultsMessage.innerHTML = {{ i18n "search_no_results" | default "No results for" }} + ` "<strong>${searchQuery}</strong>"`;
+                noResultsMessage.innerHTML = noResultsText + ` "<strong>${searchQuery}</strong>"`;
                 noResultsMessage.classList.add("suggestion__no-results");
                 suggestions.appendChild(noResultsMessage);
                 return;

@@ -1,46 +1,52 @@
-{{- $pathName := page.Store.Get "pathName" -}}
-{{- $dayjs := resources.Get (printf "/%s/%s" $pathName "js/dayjs.min.js") -}}
-{{- $relativeTime := resources.Get (printf "/%s/%s" $pathName "js/relativeTime.min.js") -}}
-{{- $app := resources.Get (printf "/%s/%s" $pathName "js/app.js") -}}
+{{- $pathName := .Store.Get "pathName" -}}
+{{- $app := resources.Get (printf "%s/%s" $pathName "js/app.js") -}}
+{{- $slice := slice $app -}}
 
-{{- $slice := slice $dayjs $relativeTime $app -}}
+{{- if and .GitInfo (site.Params.docs.lastMod | default false) (site.Params.docs.lastModRelative | default true) -}}
+    {{- with resources.Get (printf "%s/%s" $pathName "js/dayjs.min.js") -}}
+        {{- $slice = $slice | append . -}}
+    {{- end -}}
+    {{- with resources.Get (printf "%s/%s" $pathName "js/relativeTime.min.js") -}}
+        {{- $slice = $slice | append . -}}
+    {{- end -}}
+{{- end -}}
 
 {{- if site.Params.docs.toc | default true -}}
     {{- if site.Params.docs.scrollSpy -}}
-        {{- $simplescrollspy := resources.Get (printf "/%s/%s" $pathName "js/simple-scrollspy.min.js") -}}
+        {{- $simplescrollspy := resources.Get (printf "%s/%s" $pathName "js/simple-scrollspy.min.js") -}}
         {{- $slice = $slice | append $simplescrollspy -}}
-        {{- $scrollspyScript := resources.Get (printf "/%s/%s" $pathName "js/scrollspy-script.js") | js.Build -}}
+        {{- $scrollspyScript := resources.Get (printf "%s/%s" $pathName "js/scrollspy-script.js") | js.Build -}}
         {{- $slice = $slice | append $scrollspyScript -}}
     {{- end -}}
 {{- end -}}
 
 {{- if site.Params.docs.tocMobile | default true -}}
-    {{- $tocmobilescrollspy := resources.Get (printf "/%s/%s" $pathName "js/toc-mobile-scrollspy.js") -}}
+    {{- $tocmobilescrollspy := resources.Get (printf "%s/%s" $pathName "js/toc-mobile-scrollspy.js") -}}
     {{- $slice = $slice | append $tocmobilescrollspy -}}
 {{- end -}}
 
 {{- if site.Params.docs.prism -}}
-    {{- $prism := resources.Get (printf "/%s/%s" $pathName "js/prism.js") -}}
+    {{- $prism := resources.Get (printf "%s/%s" $pathName "js/prism.js") -}}
     {{- $opts := dict "params" (dict "langPath" (urls.JoinPath site.BaseURL $pathName "js/components/")) -}}
     {{- $prism := $prism | js.Build $opts -}}
     {{- $slice = $slice | append $prism -}}
 {{- end -}}
 
-<!-- Bootstrap JS -->
-{{- $jsBootstrap := resources.Get (printf "/%s/%s" $pathName "js/bootstrap.js") -}}
+{{- if site.Params.docs.darkMode -}}
+    {{- with resources.Get (printf "%s/%s" $pathName "js/darkmode-switch.js") -}}
+        {{- $darkModeSwitch := . | js.Build -}}
+        {{- $slice = $slice | append $darkModeSwitch -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $jsBootstrap := resources.Get (printf "%s/%s" $pathName "js/bootstrap.js") -}}
 {{- $sourceMap := cond hugo.IsProduction "" "inline" -}}
 {{- $opts := dict "sourceMap" $sourceMap "minify" hugo.IsProduction "target" "es2018" -}}
 {{- $jsBootstrap = $jsBootstrap | js.Build $opts -}}
-{{- if hugo.IsProduction -}}
-    {{- $jsBootstrap = $jsBootstrap | fingerprint "sha384" -}}
-{{- end -}}
-<script src="{{ $jsBootstrap.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $jsBootstrap.Data.Integrity }}"{{ end }} defer></script>
+{{- $slice = $slice | append $jsBootstrap -}}
 
-<!-- Bundle JS -->
-{{- $bundle := $slice | resources.Concat (printf "/%s/%s" $pathName "js/bundle.js") -}}
-{{- if not hugo.IsServer -}}
+{{- $bundle := $slice | resources.Concat (printf "%s/%s" $pathName "js/bundle.js") -}}
+{{- if hugo.IsProduction -}}
     {{- $bundle = $bundle | minify | fingerprint "sha384" -}}
-    <script type="text/javascript" src="{{ $bundle.RelPermalink }}" integrity="{{ $bundle.Data.Integrity }}" crossorigin="anonymous" defer></script>
-{{- else -}}
-    <script type="text/javascript" src="{{ $bundle.RelPermalink }}" defer></script>
 {{- end -}}
+<script type="text/javascript" src="{{ $bundle.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $bundle.Data.Integrity }}" crossorigin="anonymous"{{ end }} defer></script>

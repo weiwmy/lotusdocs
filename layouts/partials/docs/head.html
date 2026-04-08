@@ -1,18 +1,18 @@
 <head>
     <meta charset="utf-8" />
-    {{- $pathName := page.Store.Get "pathName" -}}
+    {{- $pathName := .Store.Get "pathName" -}}
+    {{- $docsTitle := site.Params.docs.title | default site.Title -}}
     {{- $pageTitle := site.Title -}}
     {{- if .Params.heading -}}
         {{- $pageTitle = .Params.heading -}}
     {{- else if not .IsHome -}}
         {{- if ne .Title site.Title -}}
-            {{- $pageTitle = printf "%s | %s" .Title (site.Params.docs.Title | default site.Title) -}}
+            {{- $pageTitle = printf "%s | %s" .Title $docsTitle -}}
         {{- else -}}
             {{- $pageTitle = .Title -}}
         {{- end -}}
     {{- end -}}
-    <!-- Preload Critical Assets -->
-    {{- with resources.Get (printf "/%s/fonts/JetBrainsMono-Regular.woff2" $pathName) -}}
+    {{- with resources.Get (printf "%s/fonts/JetBrainsMono-Regular.woff2" $pathName) -}}
     <link rel="preload" href="{{ .RelPermalink }}" as="font" type="font/woff2" crossorigin>
     {{- end -}}
     {{- with index hugo.Data.landing "hero" -}}
@@ -44,17 +44,13 @@
             <link rel="preload" href="{{ .RelPermalink }}" as="image" fetchpriority="high">
         {{- end -}}
     {{- end -}}
-    <!-- Turbo JS -->
     {{- $turbo := resources.Get "js/turbo.min.js" -}}
     {{- if $turbo -}}
-        <script src="{{ $turbo.RelPermalink }}"></script>
+        <script src="{{ $turbo.RelPermalink }}" defer></script>
     {{- end -}}
-    <!-- Turbo Prefetch (Turbo 8) -->
     <meta name="turbo-prefetch" content="true">
 
-    {{- partialCached (printf "%s/footer/footer-scripts.html" $pathName) . $pathName -}}
-
-
+    {{- partialCached (printf "%s/footer/footer-scripts.html" $pathName) . $pathName .Lang hugo.IsProduction -}}
 
 
     <title>
@@ -65,7 +61,7 @@
     {{- end }}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="canonical" href="{{ .Permalink }}">
-    {{- with .Description | default ($.Param "description") }}
+    {{- with .Description | default (.Param "description") }}
     <meta name="description" content="{{ . }}">
     {{- end }}
     {{- with .Params.keywords | default site.Params.docs.keywords }}
@@ -79,45 +75,41 @@
     <meta name="website" content="{{ . }}">
     {{- end }}
     
-    <!-- Open Graph / Facebook -->
     {{ template "_internal/opengraph.html" . }}
-    <!-- Twitter -->
     {{ template "_internal/twitter_cards.html" . }}
 
-    <!-- favicon -->
-    {{- block "favicon" . }}{{ partialCached (printf "%s/head/favicon.html" (page.Store.Get "pathName")) . (page.Store.Get "pathName") }}{{ end -}}
+    {{- block "favicon" . }}{{ partialCached (printf "%s/head/favicon.html" (.Store.Get "pathName")) . (.Store.Get "pathName") }}{{ end -}}
     
-    <!-- Dark Mode -->
     {{- if site.Params.docs.darkMode -}}
-        {{- $darkModeInit := resources.Get (printf "/%s/js/darkmode-init.js" $pathName) | js.Build | minify -}}
-        <script>{{ $darkModeInit.Content | safeJS }}</script>
-    {{- end -}}
-    
-    <!-- FlexSearch -->
-    {{- if site.Params.flexsearch.enabled | default true -}}
-        {{- $flexSearch := resources.Get (printf "/%s/js/flexsearch.bundle.js" $pathName) -}}
-        {{- if not hugo.IsServer -}}
-            {{- $flexSearch := $flexSearch | minify | fingerprint "sha384" -}}
-            <script type="text/javascript" src="{{ $flexSearch.RelPermalink }}" integrity="{{ $flexSearch.Data.Integrity }}" crossorigin="anonymous" defer></script>
-        {{- else -}}
-            <script type="text/javascript" src="{{ $flexSearch.RelPermalink }}" defer></script>
+        {{- with resources.Get (printf "%s/js/darkmode-init.js" $pathName) -}}
+            {{- $darkModeInit := . | js.Build -}}
+            {{- if hugo.IsProduction -}}
+                {{- $darkModeInit = $darkModeInit | minify | fingerprint "sha384" -}}
+            {{- end -}}
+            <script src="{{ $darkModeInit.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $darkModeInit.Data.Integrity }}" crossorigin="anonymous"{{ end }}></script>
         {{- end -}}
     {{- end -}}
     
-    <!-- Custom CSS -->
+    {{- if site.Params.flexsearch.enabled | default true -}}
+        {{- with resources.Get (printf "%s/js/flexsearch.bundle.js" $pathName) -}}
+            {{- $flexSearch := . -}}
+            {{- if hugo.IsProduction -}}
+                {{- $flexSearch = $flexSearch | minify | fingerprint "sha384" -}}
+            {{- end -}}
+            <script type="text/javascript" src="{{ $flexSearch.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $flexSearch.Data.Integrity }}" crossorigin="anonymous"{{ end }} defer></script>
+        {{- end -}}
+    {{- end -}}
+    
     {{- $options := dict "enableSourceMap" (not hugo.IsProduction) "outputStyle" (cond hugo.IsProduction "compressed" "expanded") -}}
-    {{- $style := resources.Get (printf "/%s/scss/style.scss" $pathName) -}}
-    {{- if $style -}}
-        {{- $style = $style | resources.ExecuteAsTemplate (printf "/%s/scss/style.scss" $pathName) . | css.Sass $options -}}
+    {{- with resources.Get (printf "%s/scss/style.scss" $pathName) -}}
+        {{- $style := . | resources.ExecuteAsTemplate (printf "%s/scss/style.scss" $pathName) $ | css.Sass $options -}}
         {{- if hugo.IsProduction -}}
             {{- $style = $style | minify | fingerprint "sha384" -}}
         {{- end -}}
         <link rel="stylesheet" href="{{ $style.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $style.Data.Integrity }}"{{ end }} crossorigin="anonymous" data-turbo-track="reload">
     {{- end -}}
 
-
-    <!-- Google Analytics v4 Config -->
-    {{- if not hugo.IsServer }}
+    {{- if hugo.IsProduction }}
     {{- if site.Config.Services.GoogleAnalytics.ID }}
         {{- template "_internal/google_analytics.html" . -}}
     {{- end -}}

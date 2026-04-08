@@ -2,7 +2,7 @@
 <div id="top-header" class="top-header d-print-none">
     <div class="header-bar d-flex justify-content-between">
         <div class="d-flex align-items-center">
-            <a href='{{ page.Store.Get "docs_home_href" }}' class="logo-icon me-3" aria-label="HomePage">
+            <a href='{{ .Store.Get "docs_home_href" }}' class="logo-icon me-3" aria-label="HomePage">
                 <div class="small">
                     {{ with resources.Get "images/logos/mark.svg" }}
                             {{ .Content | safeHTML }}
@@ -37,7 +37,7 @@
 
         <div class="d-flex align-items-center">
             <ul class="list-unstyled mb-0">
-                {{ with page.Store.Get "social_links" }}
+                {{ with .Store.Get "social_links" }}
                 {{ range . }}
                     <li class="list-inline-item mb-0 me-0">
                         <a href="{{ .href }}" aria-label="{{ .name }}" rel="noopener noreferrer" target="_blank">
@@ -73,7 +73,7 @@
                         {{ site.Language.Label | default (site.Language.Name | upper) }}
                     </button>
                     <ul class="dropdown-menu text-end">
-                        {{ partial (printf "%s/i18nlist.html" (page.Store.Get "pathName")) . }}
+                        {{ partial (printf "%s/i18nlist.html" (.Store.Get "pathName")) . }}
                     </ul>
                 </div>
             {{ end }}

@@ -14,7 +14,7 @@ hero:
       mobile: "hero.webp"
 
   badge:
-    text: 2025-06-18
+    text: 2025-04-08
     color: primary # primary, secondary, success, danger, warning, info, light, dark
     pill: false # boolean
     soft: true # boolean

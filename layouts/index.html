@@ -12,7 +12,7 @@
     {{- end -}}
 
     {{- range sort $wgtTpl "weight" -}}
-        {{- page.Store.Set "sectionTitle" .sectionTitle -}}
+        {{- $.Store.Set "sectionTitle" .sectionTitle -}}
         {{- $path := printf "landing/%s.html" .template -}}
         {{- partial $path $.Page -}}
     {{- end -}}

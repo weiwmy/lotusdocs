@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {{- $pathName := site.Params.docs.pathName | default "docs" -}}
-{{- page.Store.Set "pathName" $pathName -}}
+{{- .Store.Set "pathName" $pathName -}}
 {{- partial (printf "%s/social-list.html" $pathName) . -}}
 
 <html lang="{{ site.Language.Locale }}" dir="{{ or site.Language.Direction `ltr` }}">
@@ -14,14 +14,21 @@
         </div>
             {{- partial "footer.html" . -}}
 
-        <!-- Weitheme JS -->
-        {{ $app := resources.Get "/js/app.js" }}
-        {{- if not hugo.IsServer }}
-            {{- $js := (slice $app) | resources.Concat "/js/bundle.js" | minify | fingerprint "sha384" }}
-            <script type="text/javascript" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
-        {{- else }}
-            {{- $js := (slice $app) | resources.Concat "/js/bundle.js" }}
-            <script type="text/javascript" src="{{ $js.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $js.Data.Integrity }}"{{ end }}></script>
+        {{- $sourceMap := cond hugo.IsProduction "" "inline" -}}
+        {{- $opts := dict "sourceMap" $sourceMap "minify" hugo.IsProduction "target" "es2018" -}}
+        {{- $bundleParts := slice -}}
+        {{- with resources.Get "js/bootstrap.js" }}
+            {{- $bundleParts = $bundleParts | append (. | js.Build $opts) -}}
+        {{- end }}
+        {{- with resources.Get "js/app.js" }}
+            {{- $bundleParts = $bundleParts | append . -}}
+        {{- end }}
+        {{- if gt (len $bundleParts) 0 }}
+            {{- $js := $bundleParts | resources.Concat "js/bundle.js" -}}
+            {{- if hugo.IsProduction }}
+                {{- $js = $js | minify | fingerprint "sha384" }}
+            {{- end }}
+            <script type="text/javascript" src="{{ $js.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous"{{ end }} defer></script>
         {{- end }}
 
         <script>

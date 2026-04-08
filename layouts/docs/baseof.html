@@ -1,7 +1,14 @@
+<!DOCTYPE html>
 {{- $pathName := site.Params.docs.pathName | default "docs" -}}
 {{- $docsHomeHref := site.Params.docs.logoLinkURL | default site.Home.RelPermalink -}}
-{{- page.Store.Set "pathName" $pathName -}}
-{{- page.Store.Set "docs_home_href" $docsHomeHref -}}
+{{- $tocEnabled := site.Params.docs.toc | default true -}}
+{{- $tocMobileEnabled := site.Params.docs.tocMobile | default true -}}
+{{- $showBreadcrumbs := site.Params.docs.breadcrumbs | default true -}}
+{{- $darkModeEnabled := site.Params.docs.darkMode -}}
+{{- $flexsearchEnabled := site.Params.flexsearch.enabled | default true -}}
+{{- $tocHidden := or .IsNode (eq .Params.toc false) (eq .TableOfContents `<nav id="TableOfContents"></nav>`) -}}
+{{- .Store.Set "pathName" $pathName -}}
+{{- .Store.Set "docs_home_href" $docsHomeHref -}}
 {{- partial (printf "%s/social-list.html" $pathName) . -}}
 
 <html lang="{{ site.Language.Locale }}" dir="{{ or site.Language.Direction `ltr` }}">
@@ -9,32 +16,31 @@
     <body>
         <div class="content">
             <div class="page-wrapper toggled">
-                {{- partialCached (printf "%s/sidebar.html" $pathName) . $pathName -}}
+                {{- partialCached (printf "%s/sidebar.html" $pathName) . $pathName .Section .Lang -}}
 
                     <!-- Start Page Content -->
                     <main class="page-content bg-transparent">
                         {{ if hugo.IsMultilingual }}
                             {{- partial (printf "%s/top-header.html" $pathName) . -}}
                         {{ else }}
-                            {{- partialCached (printf "%s/top-header.html" $pathName) . $pathName -}}
+                            {{- partialCached (printf "%s/top-header.html" $pathName) . $pathName .Lang $darkModeEnabled $flexsearchEnabled -}}
                         {{ end }}
                             <div class="container-fluid">
                                 <div class="layout-spacing">
-                                    {{ $currentPage := . -}}
-                                    {{ if site.Params.docs.breadcrumbs | default true }}
+                                    {{ if $showBreadcrumbs }}
                                         <div class="d-md-flex justify-content-between align-items-center">
                                             {{- partial (printf "%s/breadcrumbs.html" $pathName) . -}}
                                         </div>
                                     {{ end }}
                                     <div class="row flex-xl-nowrap">
-                                        {{- if site.Params.docs.toc | default true -}}
-                                        <div class="docs-toc col-xl-3 {{ if or .IsNode (eq .Params.toc false) (eq .TableOfContents `<nav id="TableOfContents"></nav>`) }}visually-hidden{{ end }} d-xl-block">
+                                        {{- if $tocEnabled -}}
+                                        <div class="docs-toc col-xl-3 {{ if $tocHidden }}visually-hidden{{ end }} d-xl-block">
                                             {{- partial (printf "%s/toc.html" $pathName) . -}}
                                         </div>
                                         {{- end -}}
 
-                                        {{- if site.Params.docs.tocMobile | default true -}}
-                                        <div class="docs-toc-mobile {{ if or .IsNode (eq .Params.toc false) (eq .TableOfContents `<nav id="TableOfContents"></nav>`) }}visually-hidden{{ end }} d-print-none d-xl-none">
+                                        {{- if $tocMobileEnabled -}}
+                                        <div class="docs-toc-mobile {{ if $tocHidden }}visually-hidden{{ end }} d-print-none d-xl-none">
                                             <button id="toc-dropdown-btn" class="btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-offset="0,0" aria-expanded="false">
                                                 Table of Contents
                                             </button>
@@ -42,7 +48,7 @@
                                         </div>
                                         {{- end -}}
 
-                                        <div class="docs-content col-12 {{ if and (not .IsNode) (site.Params.docs.toc | default true) (ne .Params.toc false) (.TableOfContents.Headings) }}col-xl-9{{ end }} mt-0">
+                                        <div class="docs-content col-12 {{ if and (not $tocHidden) $tocEnabled (.TableOfContents.Headings) }}col-xl-9{{ end }} mt-0">
                                             <div class="mb-2 d-flex">
                                                 {{- if site.Params.docs.titleIcon -}}
                                                 <i class="material-icons title-icon me-2">{{- .Params.icon | default "article" }}</i>
@@ -58,7 +64,7 @@
                                                 <p class="lead mb-0">{{ .Description | markdownify }}</p>
                                             {{- end -}}
 
-                                            <div id="content" class="main-content" {{ if site.Params.docs.toc }}data-bs-spy="scroll" data-bs-root-margin="0px 0px -65%" data-bs-target="#toc-mobile"{{ end }}>
+                                            <div id="content" class="main-content" {{ if $tocEnabled }}data-bs-spy="scroll" data-bs-root-margin="0px 0px -65%" data-bs-target="#toc-mobile"{{ end }}>
                                                 {{ block "main" . }}{{ end }}
                                             </div>
                                             <div>
@@ -68,7 +74,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {{- partialCached (printf "%s/footer.html" $pathName) . $pathName -}}
+                            {{- partialCached (printf "%s/footer.html" $pathName) . $pathName .Lang -}}
 
                     </main>
             </div>
@@ -80,16 +86,8 @@
         <!-- Back to top -->
         {{ end }}
 
-        <!-- Dark Mode Switch JS -->
-        {{ if site.Params.docs.darkMode }}
-                                            {{ $darkModeSwitch := resources.Get (printf "/%s/js/darkmode-switch.js" $pathName) | js.Build | minify }}
-                                            <script>{{ $darkModeSwitch.Content | safeJS }}</script>
-                                        {{ end -}}
-
-        {{/* Moved to head */}}
-
-        {{ if site.Params.flexsearch.enabled | default true }}
-            {{- partialCached (printf "%s/footer/flexsearch.html" $pathName) . $pathName -}}
+        {{ if $flexsearchEnabled }}
+            {{- partialCached (printf "%s/footer/flexsearch.html" $pathName) . $pathName .Lang -}}
         {{ end }}
     </body>
 </html>

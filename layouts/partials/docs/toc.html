@@ -1,8 +1,8 @@
+{{- $toc := .TableOfContents -}}
+{{- if site.Params.docs.scrollSpy -}}
+    {{- $toc = replaceRE "<nav id=\"TableOfContents\">" "<nav id=\"toc\">" $toc -}}
+{{- end -}}
 <toc>
     <div class="fw-bold text-uppercase mb-2">On this page</div>
-    {{ if site.Params.docs.scrollSpy -}}
-           {{ .TableOfContents | replaceRE "<nav id=\"TableOfContents\">" "<nav id=\"toc\">" | safeHTML }}
-    {{ else -}}
-           {{ .TableOfContents }}
-    {{ end -}}
+    {{ $toc | safeHTML }}
 </toc>

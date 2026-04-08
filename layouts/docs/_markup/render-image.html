@@ -1,33 +1,28 @@
-{{ $dest := .Destination }}
-{{ $text := .PlainText }}
-{{ $url := urls.Parse $dest }}
+{{- $destination := .Destination -}}
+{{- $text := .PlainText -}}
+{{- $parsedURL := urls.Parse $destination -}}
+{{- $resource := cond $parsedURL.Scheme (resources.GetRemote $destination) (resources.Get $destination) -}}
 
-{{ $image := hugo.NewScratch }}
-{{ with $url.Scheme }}
-  {{  $image.Set "resource" (resources.GetRemote $dest) }}
-{{ else }}
-  {{  $image.Set "resource" (resources.Get $dest) }}
-{{ end }}
+{{- define "partials/inline/render-image-element" -}}
+  {{- $resource := .resource -}}
+  {{- $destination := .destination -}}
+  {{- $text := .text -}}
+  {{- if $resource -}}
+    {{- if eq $resource.MediaType.SubType "svg" -}}
+      {{- $resource.Content | safeHTML -}}
+    {{- else -}}
+      <img src="{{ $resource.RelPermalink | safeURL }}" alt="{{ $text }}" width="{{ $resource.Width }}" height="{{ $resource.Height }}" loading="lazy" decoding="async">
+    {{- end -}}
+  {{- else -}}
+    <img src="{{ $destination | safeURL }}" alt="{{ $text }}" loading="lazy" decoding="async">
+  {{- end -}}
+{{- end -}}
 
-{{ if .Title }}
+{{- if .Title -}}
   <figure>
-    {{ with ($image.Get "resource") }}
-      {{ if eq .MediaType.SubType "svg" }}
-        {{ .Content | safeHTML }}
-      {{ else }}
-        <img src="{{ .RelPermalink | safeURL }}" alt="{{ $text }}" width="{{ .Width }}" height="{{ .Height }}" loading="lazy">
-      {{ end }}
-    {{ else }}
-      <img src="{{ .Destination | safeURL }}" alt="{{ $text }}" width="{{ .Width }}" height="{{ .Height }}" loading="lazy">
-    {{ end }}
+    {{- partial "inline/render-image-element" (dict "resource" $resource "destination" $destination "text" $text) -}}
     <figcaption>{{ .Title | markdownify }}</figcaption>
   </figure>
-{{ else }}
-  {{ with ($image.Get "resource") }}
-    {{ if eq .MediaType.SubType "svg" }}
-      {{ .Content | safeHTML }}
-    {{ else }}
-      <img src="{{ .RelPermalink | safeURL }}" alt="{{ $text }}" width="{{ .Width }}" height="{{ .Height }}" loading="lazy">
-    {{ end }}
-  {{ end }}
-{{ end }}
+{{- else -}}
+  {{- partial "inline/render-image-element" (dict "resource" $resource "destination" $destination "text" $text) -}}
+{{- end -}}
