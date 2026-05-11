@@ -1,33 +1,4 @@
-/* Template Name: Weitheme
-   Author: weiwmy
-   E-mail: hi@weiwmy.com
-   Created: October 2024
-   Version: 1.0.0
-   File Description: Main JS file of the docs template
-*/
-
-
-/*********************************/
-/*         INDEX                 */
-/*================================
- *     01.  Toggle Menus         *
- *     02.  Active Menu          *
- *     03.  Clickable Menu       *
- *     04.  Back to top          *
- *     05.  DD Menu              *
- *     06.  Active Sidebar Menu  *
- *     07.  ScrollSpy            *
- ================================*/
-
-
 function getClosest(elem, selector) {
-    if (!Element.prototype.matches) {
-        Element.prototype.matches = Element.prototype.matchesSelector || Element.prototype.mozMatchesSelector || Element.prototype.msMatchesSelector || Element.prototype.oMatchesSelector || Element.prototype.webkitMatchesSelector || function (s) {
-            var matches = (this.document || this.ownerDocument).querySelectorAll(s), i = matches.length;
-            while (--i >= 0 && matches.item(i) !== this) { }
-            return i > -1;
-        };
-    }
     for (; elem && elem !== document; elem = elem.parentNode) {
         if (elem.matches(selector)) return elem;
     }
@@ -102,20 +73,6 @@ function initApp() {
         };
     }
 
-    // Clickable Menu
-    const navigation = document.getElementById("navigation");
-    if (navigation) {
-        var elements = navigation.getElementsByTagName("a");
-        for (var i = 0, len = elements.length; i < len; i++) {
-            elements[i].onclick = function (elem) {
-                if (elem.target.getAttribute("href") === "javascript:void(0)") {
-                    var submenu = elem.target.nextElementSibling.nextElementSibling;
-                    submenu.classList.toggle('open');
-                }
-            }
-        }
-    }
-
     const sidebar = document.getElementById("sidebar");
     if (sidebar) {
         var elements = sidebar.getElementsByTagName("button");
@@ -130,16 +87,18 @@ function initApp() {
     // Back to top
     const mybutton = document.getElementById("back-to-top");
     if (mybutton) {
-        window.onscroll = function () {
+        const toggleBackToTop = function () {
             if (document.body.scrollTop > 500 || document.documentElement.scrollTop > 500) {
                 mybutton.style.display = "block";
             } else {
                 mybutton.style.display = "none";
             }
         };
+        window.addEventListener("scroll", toggleBackToTop, { passive: true });
+        toggleBackToTop();
+
         mybutton.onclick = function() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
+            window.scrollTo({ top: 0, behavior: "smooth" });
         };
     }
 
@@ -170,12 +129,7 @@ document.addEventListener('click', function(elem) {
     }
 });
 
-// Initialize
-if (window.Turbo) {
-    document.addEventListener("turbo:load", initApp);
-} else {
-    document.addEventListener("DOMContentLoaded", initApp);
-}
+document.addEventListener("DOMContentLoaded", initApp);
 
 function windowScroll() {
     var navbar = document.getElementById("topnav");
@@ -187,4 +141,4 @@ function windowScroll() {
         }
     }
 }
-window.addEventListener('scroll', windowScroll);
+window.addEventListener('scroll', windowScroll, { passive: true });

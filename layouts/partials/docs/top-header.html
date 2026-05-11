@@ -4,13 +4,13 @@
         <div class="d-flex align-items-center">
             <a href='{{ .Store.Get "docs_home_href" }}' class="logo-icon me-3" aria-label="HomePage">
                 <div class="small">
-                    {{ with resources.Get "images/logos/mark.svg" }}
-                            {{ .Content | safeHTML }}
+                    {{ with resources.Get "images/logos/logo.webp" }}
+                        <img src="{{ .RelPermalink }}" alt="" height="28" decoding="async">
                     {{ end }}
                 </div>
                 <div class="big">
-                    {{ with resources.Get "images/logos/logo.svg" }}
-                            {{ .Content | safeHTML }}
+                    {{ with resources.Get "images/logos/logo.webp" }}
+                        <img src="{{ .RelPermalink }}" alt="" height="28" decoding="async">
                     {{ end }}
                 </div>
             </a>

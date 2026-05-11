@@ -1,6 +1,3 @@
 {{ if os.FileExists "static/favicon.webp" -}}
 <link rel="icon" href="{{ "favicon.webp" | relURL }}" sizes="any">
 {{ end -}}
-{{ if os.FileExists "static/favicon.svg" -}}
-  <link rel="icon" type="image/svg+xml" href="{{ "favicon.svg" | relURL }}">
-{{ end -}}

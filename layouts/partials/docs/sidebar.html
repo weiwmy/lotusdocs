@@ -2,8 +2,8 @@
 <nav id="sidebar" class="sidebar-wrapper">
     <div class="sidebar-brand">
         <a href='{{ .Store.Get "docs_home_href" }}' aria-label="HomePage">
-            {{ with resources.Get "images/logos/logo.svg" }}
-                {{ .Content | safeHTML }}
+            {{ with resources.Get "images/logos/logo.webp" }}
+                <img src="{{ .RelPermalink }}" alt="" height="26" decoding="async">
             {{ end }}
         </a>
     </div>

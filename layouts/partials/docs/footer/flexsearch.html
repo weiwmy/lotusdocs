@@ -1,5 +1,14 @@
-<script type="module">
-    const noResultsText = {{ i18n "search_no_results" | default "No results for" | jsonify }};
+{{- $pathName := .Store.Get "pathName" -}}
+{{- $flexSearch := resources.Get (printf "%s/js/flexsearch.bundle.js" $pathName) -}}
+{{- if hugo.IsProduction -}}
+    {{- $flexSearch = $flexSearch | minify | fingerprint "sha384" -}}
+{{- end -}}
+<script>
+    const noResultsText = {{ i18n "search_no_results" | default "No results for" | jsonify | safeJS }};
+    const flexSearchScript = {
+        src: {{ $flexSearch.RelPermalink | jsonify | safeJS }},
+        integrity: {{ cond hugo.IsProduction $flexSearch.Data.Integrity "" | jsonify | safeJS }}
+    };
 
     function initSearch() {
         const suggestions = document.getElementById('suggestions');
@@ -11,8 +20,11 @@
         search.dataset.flexsearchReady = 'true';
 
         const flexsearchContainerCollapse = new Collapse(flexsearchContainer, { toggle: false });
+        let searchReadyPromise;
 
-        flexsearchContainer.addEventListener('shown.bs.collapse', () => search.focus());
+        flexsearchContainer.addEventListener('shown.bs.collapse', () => {
+            prepareSearch().then(() => search.focus());
+        });
         
         const topHeader = document.getElementById("top-header");
         document.addEventListener('click', (elem) => {
@@ -35,54 +47,81 @@
         }
         document.addEventListener('keydown', inputFocus);
 
-        // FlexSearch Index Initialization (Global Cache)
-        if (!window.flexSearchIndex) {
-            window.flexSearchIndex = new FlexSearch.Document({
-                tokenize: {{ site.Params.flexsearch.tokenize | default "forward" }},
-                minlength: {{ site.Params.flexsearch.minQueryChar | default 0}},
-                cache: {{ site.Params.flexsearch.cache | default 100 }},
-                optimize: {{ site.Params.flexsearch.optimize | default true }},
-                document: {
-                    id: 'id',
-                    store: ["href", "title", "description"],
-                    index: ["title", "description", "content"]
+        function loadFlexSearch() {
+            if (window.FlexSearch) return Promise.resolve();
+            if (window.flexSearchScriptPromise) return window.flexSearchScriptPromise;
+
+            window.flexSearchScriptPromise = new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = flexSearchScript.src;
+                script.defer = true;
+                if (flexSearchScript.integrity) {
+                    script.integrity = flexSearchScript.integrity;
+                    script.crossOrigin = 'anonymous';
                 }
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
             });
 
-            {{- $searchSectionsIndex := site.Params.flexsearch.searchSectionsIndex | default (slice) -}}
-            {{- $list := slice -}}
-            {{- if gt (len $searchSectionsIndex) 0 }}
-                {{- if eq $searchSectionsIndex "ALL" }}
-                    {{- $list = site.Pages }}
-                {{- else }}
-                    {{- $list = where site.Pages "Type" "in" $searchSectionsIndex }}
-                    {{- if in $searchSectionsIndex "HomePage" }}
-                        {{ $list = $list | append site.Home }}
-                    {{- end }}
-                {{- end }}
-            {{- else }}
-                {{- $list = (where site.Pages "Section" (.Store.Get "pathName")) }}
-            {{- end }}
-
-            {{ range $index, $element := $list -}}
-                window.flexSearchIndex.add({
-                    id: {{ $index }},
-                    href: {{ .RelPermalink | jsonify }},
-                    title: {{ .Title | jsonify }},
-                    {{ with .Description -}}
-                        description: {{ . | jsonify }},
-                    {{ else -}}
-                        description: {{ .Summary | htmlUnescape | plainify | jsonify }},
-                    {{ end -}}
-                    content: {{ .Content | htmlUnescape | plainify | jsonify }}
-                });
-            {{ end -}}
+            return window.flexSearchScriptPromise;
         }
 
-        search.oninput = function() {
+        function prepareSearch() {
+            if (window.flexSearchIndex) return Promise.resolve();
+            if (searchReadyPromise) return searchReadyPromise;
+
+            searchReadyPromise = loadFlexSearch().then(() => {
+                window.flexSearchIndex = new FlexSearch.Document({
+                    tokenize: {{ site.Params.flexsearch.tokenize | default "forward" }},
+                    minlength: {{ site.Params.flexsearch.minQueryChar | default 0}},
+                    cache: {{ site.Params.flexsearch.cache | default 100 }},
+                    optimize: {{ site.Params.flexsearch.optimize | default true }},
+                    document: {
+                        id: 'id',
+                        store: ["href", "title", "description"],
+                        index: ["title", "description", "content"]
+                    }
+                });
+
+                {{- $searchSectionsIndex := site.Params.flexsearch.searchSectionsIndex | default (slice) -}}
+                {{- $list := slice -}}
+                {{- if gt (len $searchSectionsIndex) 0 }}
+                    {{- if eq $searchSectionsIndex "ALL" }}
+                        {{- $list = site.Pages }}
+                    {{- else }}
+                        {{- $list = where site.Pages "Type" "in" $searchSectionsIndex }}
+                        {{- if in $searchSectionsIndex "HomePage" }}
+                            {{ $list = $list | append site.Home }}
+                        {{- end }}
+                    {{- end }}
+                {{- else }}
+                    {{- $list = (where site.Pages "Section" (.Store.Get "pathName")) }}
+                {{- end }}
+
+                {{ range $index, $element := $list -}}
+                    window.flexSearchIndex.add({
+                        id: {{ $index }},
+                        href: {{ .RelPermalink | jsonify | safeJS }},
+                        title: {{ .Title | jsonify | safeJS }},
+                        {{ with .Description -}}
+                            description: {{ . | jsonify | safeJS }},
+                        {{ else -}}
+                            description: {{ .Summary | htmlUnescape | plainify | jsonify | safeJS }},
+                        {{ end -}}
+                        content: {{ .Content | htmlUnescape | plainify | jsonify | safeJS }}
+                    });
+                {{ end -}}
+            });
+
+            return searchReadyPromise;
+        }
+
+        search.oninput = async function() {
             const maxResult = {{ site.Params.flexsearch.maxResult | default 5}};
             const minlength = {{ site.Params.flexsearch.minQueryChar | default 0}};
             const searchQuery = this.value; // Assume sanitized or use a sanitizer if needed
+            await prepareSearch();
             const results = window.flexSearchIndex.search(searchQuery, {limit: maxResult, enrich: true});
 
             const flatResults = new Map();
@@ -132,9 +171,5 @@
         };
     }
 
-    if (window.Turbo) {
-        document.addEventListener("turbo:load", initSearch);
-    } else {
-        document.addEventListener("DOMContentLoaded", initSearch);
-    }
+    document.addEventListener("DOMContentLoaded", initSearch);
 </script>

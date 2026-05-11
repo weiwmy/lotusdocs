@@ -82,7 +82,8 @@
                 &:focus {
                     outline: none;
                 }
-                svg {
+                svg,
+                img {
                     height: 26px;
                 }
             }
@@ -375,7 +376,8 @@
                         @media (max-width: 767px) {
                             display: block;
                         }
-                        svg {
+                        svg,
+                        img {
                             height: 28px;
                         }
                     }

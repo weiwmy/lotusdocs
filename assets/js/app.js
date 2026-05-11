@@ -13,18 +13,18 @@ function windowScroll() {
     }
 }
 
-window.addEventListener('scroll', (ev) => {
-    ev.preventDefault();
+window.addEventListener('scroll', () => {
     windowScroll();
-})
+}, { passive: true });
 
-// Toggle menu
-function toggleMenu() {
-    document.getElementById('isToggle').classList.toggle('open');
-    var isOpen = document.getElementById('navigation')
-    if (isOpen.style.display === "block") {
-        isOpen.style.display = "none";
-    } else {
-        isOpen.style.display = "block";
-    }
-};
+document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('isToggle');
+    const navigation = document.getElementById('navigation');
+
+    if (!toggle || !navigation) return;
+
+    toggle.addEventListener('click', () => {
+        toggle.classList.toggle('open');
+        navigation.style.display = navigation.style.display === 'block' ? 'none' : 'block';
+    });
+});

@@ -44,12 +44,6 @@
             <link rel="preload" href="{{ .RelPermalink }}" as="image" fetchpriority="high">
         {{- end -}}
     {{- end -}}
-    {{- $turbo := resources.Get "js/turbo.min.js" -}}
-    {{- if $turbo -}}
-        <script src="{{ $turbo.RelPermalink }}" defer></script>
-    {{- end -}}
-    <meta name="turbo-prefetch" content="true">
-
     {{- partialCached (printf "%s/footer/footer-scripts.html" $pathName) . $pathName .Lang hugo.IsProduction -}}
 
 
@@ -90,23 +84,13 @@
         {{- end -}}
     {{- end -}}
     
-    {{- if site.Params.flexsearch.enabled | default true -}}
-        {{- with resources.Get (printf "%s/js/flexsearch.bundle.js" $pathName) -}}
-            {{- $flexSearch := . -}}
-            {{- if hugo.IsProduction -}}
-                {{- $flexSearch = $flexSearch | minify | fingerprint "sha384" -}}
-            {{- end -}}
-            <script type="text/javascript" src="{{ $flexSearch.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $flexSearch.Data.Integrity }}" crossorigin="anonymous"{{ end }} defer></script>
-        {{- end -}}
-    {{- end -}}
-    
     {{- $options := dict "enableSourceMap" (not hugo.IsProduction) "outputStyle" (cond hugo.IsProduction "compressed" "expanded") -}}
     {{- with resources.Get (printf "%s/scss/style.scss" $pathName) -}}
         {{- $style := . | resources.ExecuteAsTemplate (printf "%s/scss/style.scss" $pathName) $ | css.Sass $options -}}
         {{- if hugo.IsProduction -}}
             {{- $style = $style | minify | fingerprint "sha384" -}}
         {{- end -}}
-        <link rel="stylesheet" href="{{ $style.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $style.Data.Integrity }}"{{ end }} crossorigin="anonymous" data-turbo-track="reload">
+        <link rel="stylesheet" href="{{ $style.RelPermalink }}" {{ if hugo.IsProduction }}integrity="{{ $style.Data.Integrity }}"{{ end }} crossorigin="anonymous">
     {{- end -}}
 
     {{- if hugo.IsProduction }}
